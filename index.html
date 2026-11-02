@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Search</title>
+<link rel="icon" id="fav" href="data:,">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#000;--panel:#181822;--fg:#c9c9d1;--dim:#6b6b78;--border:#8a8a8a;--accent:#9cc4ff;--ok:#8fd694;--err:#ff8a8a}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font:16px/1.45 'Roboto Mono',ui-monospace,Menlo,Consolas,monospace;display:flex;justify-content:center;padding:12vh 16px 16px}
+.wrap{display:flex;gap:14px;align-items:flex-start;width:min(1080px,100%)}
+.panel{border:2px solid #555;border-radius:16px;padding:10px 22px 22px;transition:border-color .25s,box-shadow .25s}
+.panel h2{margin:0 0 6px 0;font-weight:400;font-size:1.35rem;color:#b5b5bd}
+#sp{flex:1 1 auto;min-width:0}
+#cp{flex:0 0 250px;padding-left:18px;padding-right:18px}
+#sp.hit{border-color:var(--accent);box-shadow:0 0 18px -6px var(--accent)}
+.box{height:min(64vh,640px);min-height:380px;background:var(--panel);border:3px solid var(--border);border-radius:10px;padding:14px 16px;overflow-y:auto;position:relative;scrollbar-width:thin;scrollbar-color:#333 transparent}
+.box.small{padding:10px 12px}
+#term{cursor:text}
+.ln{white-space:pre-wrap;word-break:break-word;animation:in .18s ease-out}
+@keyframes in{from{opacity:0;transform:translateY(3px)}}
+.dim{color:var(--dim)}.ok{color:var(--ok)}.err{color:var(--err)}.acc{color:var(--accent)}
+.ln a{color:var(--accent)}
+#line{display:flex;align-items:flex-start;gap:.6ch}
+#prompt{color:var(--accent);user-select:none}
+#mirror{white-space:pre-wrap;word-break:break-all;flex:1;min-height:1.45em;position:relative}
+#mirror span{display:inline}
+#mirror .pop{animation:pop .22s cubic-bezier(.2,1.6,.4,1)}
+@keyframes pop{0%{transform:translateY(-5px) scale(1.6);color:var(--accent);text-shadow:0 0 12px var(--accent)}100%{transform:none;color:inherit;text-shadow:none}}
+.caret{display:inline-block;width:.6ch;height:1.15em;vertical-align:text-bottom;background:var(--accent);box-shadow:0 0 8px var(--accent);margin:0 -.6ch 0 0;animation:blink 1.05s steps(1) infinite}
+.caret.solid{animation:none}
+@keyframes blink{50%{opacity:0}}
+#ph{color:var(--dim);position:absolute;left:.6ch;top:0;pointer-events:none}
+#inp{position:absolute;opacity:0;pointer-events:none;left:-9999px}
+#fx{position:absolute;left:0;top:0;width:0;height:0;overflow:visible;pointer-events:none}
+.spark{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--accent);box-shadow:0 0 6px var(--accent)}
+#cmds div{color:var(--dim);cursor:pointer;padding:1px 4px;margin:0 -4px;border-radius:4px;transition:color .15s,background .15s}
+#cmds div:hover{color:var(--accent);background:#ffffff0d}
+canvas.cv{display:block;margin:6px 0;border:2px solid var(--border);border-radius:6px;background:#0d0d14}
+.win{position:fixed;z-index:50;background:var(--panel);border:2px solid var(--border);border-radius:12px;box-shadow:0 14px 44px #000b;overflow:hidden;font-size:14px;max-width:96vw;animation:in .2s}
+.wh{display:flex;justify-content:space-between;align-items:center;padding:6px 8px 6px 12px;border-bottom:2px solid #ffffff14;cursor:move;user-select:none;touch-action:none}
+.wt{color:#b5b5bd}
+.wb button{background:none;border:0;color:var(--dim);font:inherit;width:28px;height:26px;border-radius:6px;cursor:pointer}
+.wb button:hover{background:#ffffff14;color:var(--accent)}
+.wb .wx:hover{color:var(--err)}
+.wbody{padding:10px 12px 12px}
+.win.min{width:230px!important}
+.win.min .wbody{height:0!important;padding:0;overflow:hidden}
+.win.min .wh{border-bottom:0}
+.win input{flex:1;min-width:0;background:#0d0d14;color:var(--fg);border:2px solid var(--border);border-radius:6px;padding:6px 8px;font:inherit;outline:none}
+.win input:focus{border-color:var(--accent)}
+.win .b{background:#ffffff0d;color:var(--fg);border:2px solid var(--border);border-radius:6px;padding:5px 10px;font:inherit;cursor:pointer;transition:border-color .15s,color .15s}
+.win .b:hover{border-color:var(--accent);color:var(--accent)}
+.win.view .wbody{padding:0;height:min(76vh,700px);display:flex;flex-direction:column}
+.vbar{display:flex;gap:6px;padding:8px 10px;border-bottom:2px solid #ffffff14}
+.vstage{position:relative;flex:1;background:#0d0d14;min-height:0}
+.vstage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
+.vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);background:var(--panel);pointer-events:none;transition:opacity .25s;text-align:center;padding:12px}
+.vload.off{opacity:0}
+.vnote{padding:5px 10px;font-size:12px;border-top:2px solid #ffffff14;color:var(--dim)}
+@media(max-width:760px){.wrap{flex-direction:column}#cp{flex:none;width:100%}#sp{width:100%}.box{height:50vh}body{padding-top:5vh}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="panel" id="sp">
+    <h2>Search</h2>
+    <div class="box" id="term" tabindex="-1">
+      <div id="log"></div>
+      <div id="line"><span id="prompt">&gt;</span><div id="mirror"></div></div>
+      <input id="inp" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Search or enter a command">
+      <div id="fx"></div>
+    </div>
+  </section>
+  <aside class="panel" id="cp">
+    <h2>Command list</h2>
+    <div class="box small" id="cmds"></div>
+  </aside>
+</div>
+
+<script>
+(() => {
+'use strict';
+const $ = id => document.getElementById(id);
+const term=$('term'), log=$('log'), mirror=$('mirror'), inp=$('inp'), fx=$('fx'), sp=$('sp');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- storage ---------- */
+const store = {
+  get(k, d){ try { const v = localStorage.getItem('cli_'+k); return v===null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v){ try { localStorage.setItem('cli_'+k, JSON.stringify(v)); } catch {} }
+};
+
+/* Game catalogs. Library / Emulator / Arcade are cherri's own built-in catalogs and
+   cannot be copied from the outside, so they start empty: point them at your own
+   catalog with  /games set <name> <url>.  The legacy catalogs are shown only when
+   /games legacy on is set, like cherri's "Display legacy games" toggle. */
+const defaultSources = {
+  library:  {url:'', legacy:false},
+  emulator: {url:'', legacy:false},
+  arcade:   {url:'', legacy:false},
+  gmshelf:  {url:'', legacy:true},
+  ckv:      {url:'', legacy:true},
+  seraph:   {url:'', legacy:true},
+  truffled: {url:'', legacy:true},
+  ugs:      {url:'', legacy:true},
+  gnmath:   {url:'https://gn-math.dev/', legacy:true}
+};
+const labels = {library:'Library',emulator:'Emulator',arcade:'Arcade',gmshelf:'GMShelf',ckv:'CKV',seraph:'Seraph',truffled:'Truffled',ugs:'UGS',gnmath:'GN Math'};
+
+let cfg = {
+  engine: store.get('engine','duckduckgo'), theme: store.get('theme','dark'),
+  title: store.get('title',''), icon: store.get('icon',''), sound: store.get('sound',true),
+  // proxy (same model as cherri: service worker + Wisp server + selectable transport)
+  proxyOn: store.get('proxyOn',false), wisp: store.get('wisp',''), transport: store.get('transport','epoxy'),
+  identity: store.get('identity','mirror'), base: store.get('base','/'),
+  // games / music
+  legacy: store.get('legacy',true), sources: Object.assign({}, defaultSources, store.get('sources',{})),
+  invidious: store.get('invidious','https://inv.nadeko.net')
+};
+
+/* ---------- audio ---------- */
+let ctx=null, noiseBuf=null;
+function audio(){
+  if(!ctx){ const AC=window.AudioContext||window.webkitAudioContext; if(!AC) return null; ctx=new AC();
+    noiseBuf=ctx.createBuffer(1,ctx.sampleRate*0.1,ctx.sampleRate); const d=noiseBuf.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1; }
+  if(ctx.state==='suspended') ctx.resume();
+  return ctx;
+}
+function tick(kind){
+  if(!cfg.sound||!audio()) return;
+  const t=ctx.currentTime, big=kind==='enter', soft=kind==='back', deep=kind==='space';
+  const n=ctx.createBufferSource(); n.buffer=noiseBuf;
+  const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=(soft?2600:big?900:1500)+Math.random()*700; bp.Q.value=1.2;
+  const ng=ctx.createGain(); ng.gain.setValueAtTime(big?.5:.32,t); ng.gain.exponentialRampToValueAtTime(.001,t+.045);
+  n.connect(bp).connect(ng).connect(ctx.destination); n.start(t,Math.random()*.03,.05);
+  const o=ctx.createOscillator(), g=ctx.createGain();
+  const f=(big?110:deep?135:soft?210:170)*(1+Math.random()*.12);
+  o.frequency.setValueAtTime(f,t); o.frequency.exponentialRampToValueAtTime(f*.55,t+.07);
+  g.gain.setValueAtTime(big?.28:.16,t); g.gain.exponentialRampToValueAtTime(.001,t+.09);
+  o.connect(g).connect(ctx.destination); o.start(t); o.stop(t+.1);
+}
+function chime(ok=true){
+  if(!cfg.sound||!audio()) return;
+  [0,.08].forEach((d,i)=>{ const t=ctx.currentTime+d, o=ctx.createOscillator(), g=ctx.createGain();
+    o.type='sine'; o.frequency.value=ok?[660,880][i]:[330,247][i];
+    g.gain.setValueAtTime(.07,t); g.gain.exponentialRampToValueAtTime(.001,t+.25); o.connect(g).connect(ctx.destination); o.start(t); o.stop(t+.26); });
+}
+
+/* ---------- themes / cloaking ---------- */
+const themes = {
+  dark:{'--bg':'#000','--panel':'#181822','--fg':'#c9c9d1','--dim':'#6b6b78','--border':'#8a8a8a','--accent':'#9cc4ff'},
+  matrix:{'--bg':'#000800','--panel':'#06120a','--fg':'#9be8a6','--dim':'#3f7a4a','--border':'#2f9a4a','--accent':'#3dff6b'},
+  amber:{'--bg':'#0a0600','--panel':'#1a1206','--fg':'#f0c37a','--dim':'#8a6a35','--border':'#b8842f','--accent':'#ffb000'},
+  ice:{'--bg':'#03080d','--panel':'#0b1620','--fg':'#cfe6f5','--dim':'#5b7a90','--border':'#5f93b8','--accent':'#6fd3ff'},
+  rose:{'--bg':'#0c0408','--panel':'#1e0e16','--fg':'#f1cfdc','--dim':'#8a5a6b','--border':'#b06a86','--accent':'#ff7aa8'},
+  paper:{'--bg':'#e9e6df','--panel':'#f7f5ef','--fg':'#2b2b33','--dim':'#8b8b94','--border':'#6a6a72','--accent':'#2b5bd7'}
+};
+function applyTheme(n){ const t=themes[n]; if(!t) return false; for(const k in t) document.documentElement.style.setProperty(k,t[k]); return true; }
+const presets = {
+  google:{title:'Google',icon:'🔍'}, classroom:{title:'Classes',icon:'🎓'},
+  drive:{title:'My Drive - Google Drive',icon:'📁'}, docs:{title:'Untitled document - Google Docs',icon:'📄'},
+  teams:{title:'Microsoft Teams',icon:'💬'}, onenote:{title:'OneNote',icon:'📓'},
+  onedrive:{title:'OneDrive',icon:'☁️'}, wikipedia:{title:'Wikipedia, the free encyclopedia',icon:'📖'}
+};
+function applyCloak(){
+  document.title = cfg.title || 'Search';
+  $('fav').href = cfg.icon ? 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${cfg.icon}</text></svg>`) : 'data:,';
+}
+applyTheme(cfg.theme); applyCloak();
+
+/* ---------- output ---------- */
+function ph(html,cls=''){ const d=document.createElement('div'); d.className='ln '+cls; d.innerHTML=html; log.appendChild(d); term.scrollTop=term.scrollHeight; return d; }
+const p=(t,c)=>ph(esc(t),c);
+const rows=(arr)=>arr.forEach(([a,b])=>ph(`<span class="acc">${esc(a)}</span>${b?'  <span class="dim">'+esc(b)+'</span>':''}`));
+
+/* ---------- proxy engine (Ultraviolet + BareMux + Wisp) ----------
+   Needs these files hosted under cfg.base (default "/"), next to this page:
+     baremux/index.js, baremux/worker.js, epoxy/index.mjs, libcurl/index.mjs,
+     uv/uv.bundle.js, uv/uv.config.js, sw.js (importing uv/uv.sw.js)
+   and a Wisp server (default: ws(s)://<this host>/wisp/). */
+const PX = {ready:false, loading:null};
+const loadScript = src => new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=src; s.onload=res; s.onerror=()=>rej(new Error('Could not load '+src)); document.head.appendChild(s); });
+function wispUrl(){ return cfg.wisp || ((location.protocol==='https:'?'wss://':'ws://')+location.host+'/wisp/'); }
+function initProxy(){
+  if(PX.ready) return Promise.resolve();
+  if(PX.loading) return PX.loading;
+  PX.loading=(async()=>{
+    if(!('serviceWorker' in navigator)) throw new Error('Service workers are unavailable (the page must be served over https).');
+    const b=cfg.base.replace(/\/?$/,'/');
+    await loadScript(b+'baremux/index.js');
+    await loadScript(b+'uv/uv.bundle.js');
+    await loadScript(b+'uv/uv.config.js');
+    const conn=new BareMux.BareMuxConnection(b+'baremux/worker.js');
+    const mod=cfg.transport==='openssl' ? b+'libcurl/index.mjs' : b+'epoxy/index.mjs';
+    await conn.setTransport(mod,[{wisp:wispUrl()}]);
+    await navigator.serviceWorker.register(b+'sw.js',{scope:__uv$config.prefix});
+    await navigator.serviceWorker.ready;
+    window.__proxyIdentity=cfg.identity; // exposed for a server/worker that supports a disguised fingerprint
+    PX.ready=true;
+  })().catch(e=>{ PX.loading=null; throw e; });
+  return PX.loading;
+}
+function proxied(url){
+  if(cfg.proxyOn && PX.ready && window.__uv$config) return __uv$config.prefix + __uv$config.encodeUrl(url);
+  return url;
+}
+/* run fn once the proxy is ready (or immediately when the proxy is off) */
+function withProxy(fn){
+  if(!cfg.proxyOn || PX.ready) return fn();
+  p('Starting proxy...','dim');
+  initProxy().then(fn).catch(e=>ph('Proxy failed: '+esc(e.message)+'. Check /proxy_settings.','err'));
+}
+
+/* ---------- navigation helpers ---------- */
+function openUrl(url){
+  withProxy(()=>{
+    const target = proxied(url);
+    const w = window.open(target,'_blank','noopener');
+    if(!w) ph('Popup blocked. <a href="'+esc(target)+'" target="_blank" rel="noopener">Open the link</a>','err');
+  });
+}
+const engines = {
+  duckduckgo:'https://duckduckgo.com/?q=', google:'https://www.google.com/search?q=', bing:'https://www.bing.com/search?q=',
+  brave:'https://search.brave.com/search?q=', startpage:'https://www.startpage.com/do/search?q=', wikipedia:'https://en.wikipedia.org/w/index.php?search='
+};
+
+/* ---------- modes (games) ---------- */
+let mode=null;
+function endMode(){ if(mode&&mode.stop) mode.stop(); mode=null; }
+
+function guessGame(){
+  const n=1+Math.floor(Math.random()*100); let tries=0;
+  p('Number guess: I picked 1-100. Type a number. "q" quits.','acc');
+  mode={ line(l){
+    if(l.trim()==='q'){ p('Left the game.','dim'); endMode(); return; }
+    const g=parseInt(l,10); if(isNaN(g)){ p('Enter a number.','err'); return; }
+    tries++;
+    if(g<n) p(g+' is too low.'); else if(g>n) p(g+' is too high.');
+    else { p(`Got it in ${tries} ${tries===1?'try':'tries'}.`,'ok'); chime(true); endMode(); }
+  }};
+}
+
+function snakeGame(){
+  p('Snake: arrows or WASD. Esc or q quits.','acc');
+  const c=document.createElement('canvas'); c.width=c.height=240; c.className='cv'; log.appendChild(c); term.scrollTop=term.scrollHeight;
+  const x=c.getContext('2d'), acc=getComputedStyle(document.documentElement).getPropertyValue('--accent').trim()||'#9cf';
+  let s=[[6,6],[5,6],[4,6]], d=[1,0], nd=d, f=[12,6], score=0;
+  const G=12, W=20, H=20;
+  const draw=()=>{ x.clearRect(0,0,240,240); x.fillStyle='#ff8a8a'; x.fillRect(f[0]*G+1,f[1]*G+1,G-2,G-2);
+    x.fillStyle=acc; s.forEach((a,i)=>{ x.globalAlpha=i?0.75:1; x.fillRect(a[0]*G+1,a[1]*G+1,G-2,G-2); }); x.globalAlpha=1; };
+  const iv=setInterval(()=>{
+    d=nd; const h=[s[0][0]+d[0],s[0][1]+d[1]];
+    if(h[0]<0||h[1]<0||h[0]>=W||h[1]>=H||s.some(a=>a[0]===h[0]&&a[1]===h[1])){ p('Game over. Score: '+score,'err'); chime(false); endMode(); return; }
+    s.unshift(h);
+    if(h[0]===f[0]&&h[1]===f[1]){ score++; tick('enter'); f=[Math.floor(Math.random()*W),Math.floor(Math.random()*H)]; } else s.pop();
+    draw();
+  },110);
+  draw();
+  mode={ stop(){ clearInterval(iv); }, key(e){
+    const m={ArrowUp:[0,-1],w:[0,-1],ArrowDown:[0,1],s:[0,1],ArrowLeft:[-1,0],a:[-1,0],ArrowRight:[1,0],d:[1,0]}[e.key];
+    if(m){ if(m[0]!==-d[0]||m[1]!==-d[1]) nd=m; return true; }
+    if(e.key==='Escape'||e.key==='q'){ p('Left the game.','dim'); endMode(); return true; }
+    return true;
+  }};
+}
+
+/* ---------- floating windows ---------- */
+function makeWindow(title,{minimise=true,center=false,width=380}={}){
+  const w=document.createElement('div'); w.className='win'; w.style.width=width+'px';
+  w.innerHTML='<div class="wh"><span class="wt">'+esc(title)+'</span><span class="wb">'+
+    (minimise?'<button class="wmin" title="Minimise" aria-label="Minimise">&#8211;</button>':'')+
+    '<button class="wx" title="Close" aria-label="Close">&#10005;</button></span></div><div class="wbody"></div>';
+  document.body.appendChild(w);
+  if(center){ w.style.left='50%'; w.style.top='50%'; w.style.transform='translate(-50%,-50%)'; }
+  else { w.style.right='20px'; w.style.bottom='20px'; }
+  const head=w.querySelector('.wh'), api={el:w,body:w.querySelector('.wbody'),onclose:null,close(){ if(api.onclose) api.onclose(); w.remove(); }};
+  w.querySelector('.wx').onclick=()=>api.close();
+  const m=w.querySelector('.wmin');
+  if(m) m.onclick=()=>{ const on=w.classList.toggle('min'); m.innerHTML=on?'&#9633;':'&#8211;'; m.title=on?'Restore':'Minimise';
+    if(on){ w._cs=w.getAttribute('style'); Object.assign(w.style,{left:'auto',top:'auto',right:'20px',bottom:'20px',transform:'none'}); }
+    else if(w._cs) w.setAttribute('style',w._cs); };
+  head.addEventListener('pointerdown',e=>{
+    if(e.target.closest('button')) return;
+    const r=w.getBoundingClientRect(); Object.assign(w.style,{left:r.left+'px',top:r.top+'px',right:'auto',bottom:'auto',transform:'none'});
+    const dx=e.clientX-r.left, dy=e.clientY-r.top; head.setPointerCapture(e.pointerId);
+    const mv=ev=>{ w.style.left=Math.max(0,Math.min(innerWidth-80,ev.clientX-dx))+'px'; w.style.top=Math.max(0,Math.min(innerHeight-34,ev.clientY-dy))+'px'; };
+    const up=()=>{ head.removeEventListener('pointermove',mv); head.removeEventListener('pointerup',up); };
+    head.addEventListener('pointermove',mv); head.addEventListener('pointerup',up);
+  });
+  return api;
+}
+
+/* ---------- in-page URL viewer ---------- */
+function normUrl(raw){
+  raw=(raw||'').trim(); if(!raw||/\s/.test(raw)) return null;
+  let u; try{ u=new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)?raw:'https://'+raw); }catch{ return null; }
+  return /^https?:$/.test(u.protocol)&&(u.hostname.includes('.')||u.hostname==='localhost') ? u.href : null;
+}
+let viewer=null;
+function openViewer(url){
+  const href=normUrl(url); if(!href) return false;
+  if(!viewer){
+    const w=viewer=makeWindow('Viewer',{center:true,width:1000}); w.el.classList.add('view');
+    w.body.innerHTML=`<form class="vbar"><button class="b" type="button" data-r title="Reload" aria-label="Reload">&#8635;</button>
+      <input aria-label="Address" placeholder="Enter a web address" spellcheck="false"><button class="b" type="submit">Go</button>
+      <button class="b" type="button" data-n title="Open in a new tab" aria-label="Open in a new tab">&#8599;</button></form>
+      <div class="vstage"><iframe title="Page viewer" allow="autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen
+        sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-presentation"></iframe><div class="vload">Loading...</div></div>
+      <div class="vnote">Blank page? That site may not allow embedding. Turn the proxy on with /proxy_settings on, or use the arrow button.</div>`;
+    const f=w.body.querySelector('iframe'), addr=w.body.querySelector('input'), ld=w.body.querySelector('.vload'), tt=w.el.querySelector('.wt');
+    w.cur='';
+    const load=u=>{ ld.textContent='Loading...'; ld.classList.remove('off');
+      withProxyQuiet(()=>{ f.src=proxied(u); }, e=>{ ld.textContent='Proxy failed: '+e.message; }); };
+    w.go=u=>{ w.cur=u; addr.value=u; tt.textContent='Viewer: '+new URL(u).hostname; load(u); };
+    f.addEventListener('load',()=>ld.classList.add('off'));
+    w.body.querySelector('form').onsubmit=e=>{ e.preventDefault(); const n=normUrl(addr.value);
+      if(n) w.go(n); else if(addr.value.trim()) openUrl(engines[cfg.engine]+encodeURIComponent(addr.value.trim())); };
+    w.body.querySelector('[data-r]').onclick=()=>{ if(w.cur) load(w.cur); };
+    w.body.querySelector('[data-n]').onclick=()=>{ if(w.cur) openUrl(w.cur); };
+    w.onclose=()=>{ viewer=null; inp.focus(); };
+  }
+  const v=viewer; if(v.el.classList.contains('min')) v.el.querySelector('.wmin').click();
+  v.go(href); return true;
+}
+function withProxyQuiet(fn,onErr){
+  if(!cfg.proxyOn||PX.ready) return fn();
+  initProxy().then(fn).catch(onErr);
+}
+
+/* ---------- commands ---------- */
+const visibleSources = () => Object.keys(cfg.sources).filter(k=>cfg.legacy || !cfg.sources[k].legacy);
+const C = {
+  '/games':{ d:'game sources + mini games', run(a){
+    const g=(a[0]||'').toLowerCase();
+    if(g==='guess') return guessGame();
+    if(g==='snake') return snakeGame();
+    if(g==='legacy'){
+      if(a[1]!=='on'&&a[1]!=='off') return p('Legacy catalogs: '+(cfg.legacy?'on':'off')+'. Use /games legacy on|off','dim');
+      cfg.legacy=a[1]==='on'; store.set('legacy',cfg.legacy); return p('Legacy catalogs '+(cfg.legacy?'shown':'hidden')+'. (GMShelf, CKV, Seraph, Truffled, UGS, GN Math)','ok');
+    }
+    if(g==='set'){
+      const k=(a[1]||'').toLowerCase(), u=normUrl(a[2]);
+      if(!cfg.sources[k]||!u) return p('Usage: /games set <'+Object.keys(cfg.sources).join('|')+'> <url>','err');
+      cfg.sources[k].url=u; store.set('sources',cfg.sources); return p(labels[k]+' set to '+u,'ok');
+    }
+    if(g&&cfg.sources[g]){
+      if(!cfg.legacy&&cfg.sources[g].legacy) return p(labels[g]+' is a legacy catalog. Enable it with /games legacy on','err');
+      const u=cfg.sources[g].url;
+      if(!u) return p(labels[g]+' has no address yet. Set one with /games set '+g+' <url>','err');
+      p('Opening '+labels[g]+' in the viewer...','dim'); return void openViewer(u);
+    }
+    p('Sources'+(cfg.legacy?'':' (legacy hidden)')+':','dim');
+    visibleSources().forEach(k=>rows([['/games '+k, cfg.sources[k].url?labels[k]:labels[k]+' (no address set)']]));
+    rows([['/games set <name> <url>','point a source at a site'],['/games legacy on|off','show or hide legacy catalogs'],['/games guess','guess a number from 1 to 100'],['/games snake','classic snake']]);
+  }},
+  '/search':{ d:'web search', run(a){
+    const q=a.join(' '); if(!q) return p('Usage: /search <query>  (engine: '+cfg.engine+')','err');
+    p(`Searching ${cfg.engine} for "${q}"...`,'dim'); openUrl(engines[cfg.engine]+encodeURIComponent(q));
+  }},
+  '/url_search':{ d:'open a web address in the viewer', run(a){
+    if(!a[0]) return p('Usage: /url_search <address>, e.g. /url_search example.com','err');
+    if(!openViewer(a[0])) return p('That does not look like a URL. Use /search for keywords.','err');
+    p('Opening '+normUrl(a[0])+' in the viewer...','dim');
+  }},
+  '/proxy_settings':{ d:'proxy: wisp, transport, identity', run(a){
+    const s=(a[0]||'').toLowerCase(), v=(a[1]||'').toLowerCase();
+    if(s==='on'||s==='off'){ cfg.proxyOn=s==='on'; store.set('proxyOn',cfg.proxyOn);
+      p('Proxy '+s+'.','ok'); if(cfg.proxyOn) initProxy().then(()=>p('Proxy ready.','ok')).catch(e=>p('Proxy failed: '+e.message,'err')); return; }
+    if(s==='wisp'){ if(!a[1]) return p('Usage: /proxy_settings wisp <wss://host/wisp/ | default>','err');
+      if(v==='default') cfg.wisp=''; else if(/^wss?:\/\//i.test(a[1])) cfg.wisp=a[1]; else return p('Wisp address must start with ws:// or wss://','err');
+      store.set('wisp',cfg.wisp); return p('Wisp server: '+(cfg.wisp||'Default')+'. Reload the page to apply.','ok'); }
+    if(s==='transport'){ if(v!=='epoxy'&&v!=='openssl') return p('Usage: /proxy_settings transport epoxy|openssl','err');
+      cfg.transport=v; store.set('transport',v); return p('Transport: '+v+'. Reload the page to apply.','ok'); }
+    if(s==='identity'){ if(v!=='mirror'&&v!=='disguise') return p('Usage: /proxy_settings identity mirror|disguise','err');
+      cfg.identity=v; store.set('identity',v); return p('Browser identity: '+v+'. Reload the page to apply.','ok'); }
+    if(s==='base'){ if(!a[1]) return p('Usage: /proxy_settings base <path>, e.g. / or /files/','err');
+      cfg.base=a[1]; store.set('base',a[1]); return p('Proxy files path: '+a[1],'ok'); }
+    p('Proxy: '+(cfg.proxyOn?'on':'off')+(PX.ready?' (ready)':''));
+    rows([['Wisp server',cfg.wisp||'Default ('+wispUrl()+')'],['Transport',cfg.transport==='openssl'?'OpenSSL (fallback)':'Epoxy (recommended)'],['Browser identity',cfg.identity==='disguise'?'Disguise':'Mirror'],['Files path',cfg.base]]);
+    rows([['/proxy_settings on|off','turn the proxy on or off'],['/proxy_settings wisp <url|default>',''],['/proxy_settings transport epoxy|openssl','Epoxy: slim browser-like TLS. OpenSSL: fallback, works almost everywhere'],['/proxy_settings identity mirror|disguise','Mirror keeps your real fingerprint; Disguise sends a synthetic one'],['/proxy_settings base <path>','where baremux/, uv/, epoxy/ and sw.js are hosted']]);
+  }},
+  '/cloaking_settings':{ d:'change tab title and icon', run(a){
+    const s=a[0], rest=a.slice(1).join(' ');
+    if(s==='title'&&rest){ cfg.title=rest; store.set('title',rest); applyCloak(); return p('Tab title set.','ok'); }
+    if(s==='icon'&&rest){ cfg.icon=[...rest][0]; store.set('icon',cfg.icon); applyCloak(); return p('Tab icon set.','ok'); }
+    if(s==='preset'&&presets[rest]){ cfg.title=presets[rest].title; cfg.icon=presets[rest].icon; store.set('title',cfg.title); store.set('icon',cfg.icon); applyCloak(); return p('Preset applied: '+rest,'ok'); }
+    if(s==='reset'){ cfg.title=''; cfg.icon=''; store.set('title',''); store.set('icon',''); applyCloak(); return p('Cloaking reset.','ok'); }
+    if(s==='aboutblank'){ const w=window.open('about:blank','_blank'); if(!w) return p('Popup blocked.','err');
+      const f=w.document.createElement('iframe'); f.src=location.href; f.style.cssText='position:fixed;inset:0;width:100%;height:100%;border:0';
+      w.document.body.style.margin='0'; w.document.body.appendChild(f); w.document.title=cfg.title||'Search'; return p('Opened in an about:blank tab.','ok'); }
+    p(`Title: ${cfg.title||'(default)'}   Icon: ${cfg.icon||'(none)'}`);
+    rows([['/cloaking_settings title <text>',''],['/cloaking_settings icon <emoji>',''],['/cloaking_settings preset <name>',Object.keys(presets).join(', ')],['/cloaking_settings aboutblank','open inside an about:blank tab'],['/cloaking_settings reset','']]);
+  }},
+  '/theme':{ d:'change colors', run(a){
+    if(a[0]&&applyTheme(a[0])){ cfg.theme=a[0]; store.set('theme',a[0]); return p('Theme: '+a[0],'ok'); }
+    if(a[0]) p('Unknown theme.','err');
+    rows(Object.keys(themes).map(k=>['/theme '+k, k===cfg.theme?'current':'']));
+  }},
+  '/music':{ d:'Invidious music + video', run(a){
+    if(a[0]==='instance'){
+      const u=normUrl(a[1]); if(!u) return p('Usage: /music instance <url>  (pick one from https://invidious.io/ , e.g. https://inv.nadeko.net)','err');
+      cfg.invidious=u.replace(/\/$/,''); store.set('invidious',cfg.invidious); return p('Invidious instance: '+cfg.invidious,'ok');
+    }
+    const q=a.join(' ').trim(), base=cfg.invidious;
+    p((q?'Searching Invidious for "'+q+'"':'Opening Invidious')+' in the viewer. Minimise it to keep playing.','dim');
+    openViewer(q ? base+'/search?q='+encodeURIComponent(q) : base+'/');
+    if(!q) p('Tip: /music <song or artist> searches directly. /music instance <url> switches instance.','dim');
+  }},
+  '/search_engine':{ d:'pick the default engine', run(a){
+    if(a[0]&&engines[a[0]]){ cfg.engine=a[0]; store.set('engine',a[0]); return p('Search engine: '+a[0],'ok'); }
+    if(a[0]) p('Unknown engine.','err');
+    rows(Object.keys(engines).map(k=>['/search_engine '+k, k===cfg.engine?'current':'']));
+  }},
+  '/help':{ hidden:true, run(){
+    p('Type anything without a slash to search. Commands:','dim');
+    Object.entries(C).filter(([,v])=>!v.hidden).forEach(([k,v])=>rows([[k,v.d]]));
+    rows([['/sound on|off','typing sounds'],['/clear','clear the screen']]);
+    p('Tab completes commands. Up/Down recalls history.','dim');
+  }},
+  '/clear':{ hidden:true, run(){ log.innerHTML=''; }},
+  '/sound':{ hidden:true, run(a){ cfg.sound=a[0]!=='off'; store.set('sound',cfg.sound); p('Sound '+(cfg.sound?'on':'off'),'ok'); }}
+};
+
+/* right-hand list */
+const cmds=$('cmds');
+['/games','/search','/url_search','/proxy_settings','/cloaking_settings','/theme','/music','/search_engine'].forEach(k=>{
+  const d=document.createElement('div'); d.textContent=k; d.addEventListener('click',()=>{ inp.focus(); exec(k); }); cmds.appendChild(d);
+});
+
+function exec(line){
+  line=line.trim(); if(!line) return;
+  ph('<span class="acc">&gt;</span> '+esc(line),'');
+  if(mode&&mode.line){ mode.line(line); return; }
+  if(line[0]==='/'){
+    const parts=line.split(/\s+/), name=parts[0].toLowerCase();
+    if(C[name]) C[name].run(parts.slice(1)); else p(`Unknown command ${name}. Type /help.`,'err');
+  } else {
+    p(`Searching ${cfg.engine} for "${line}"...`,'dim'); openUrl(engines[cfg.engine]+encodeURIComponent(line));
+  }
+}
+
+/* ---------- typing display ---------- */
+function render(popIdx=-1){
+  const v=inp.value, pos=inp.selectionStart??v.length; let h='';
+  const caret='<i class="caret" id="cr"></i>';
+  if(!v && !log.children.length) h+='<span id="ph">type here</span>';
+  for(let i=0;i<=v.length;i++){
+    if(i===pos) h+=caret;
+    if(i<v.length) h+=`<span${i===popIdx?' class="pop"':''}>${esc(v[i])}</span>`;
+  }
+  mirror.innerHTML=h; term.scrollTop=term.scrollHeight;
+}
+function spark(){
+  if(reduce) return;
+  const cr=$('cr'); if(!cr) return;
+  const r=cr.getBoundingClientRect(), b=term.getBoundingClientRect();
+  const x=r.left-b.left+term.scrollLeft, y=r.top-b.top+term.scrollTop+r.height/2;
+  for(let i=0;i<4;i++){
+    const s=document.createElement('span'); s.className='spark'; s.style.left=x+'px'; s.style.top=y+'px'; fx.appendChild(s);
+    const dx=(Math.random()-.3)*34, dy=-8-Math.random()*22;
+    s.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${dx}px,${dy}px) scale(.2)`,opacity:0}],{duration:380+Math.random()*180,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>s.remove();
+  }
+}
+function flash(){ if(reduce) return; sp.classList.remove('hit'); void sp.offsetWidth; sp.classList.add('hit'); clearTimeout(flash.t); flash.t=setTimeout(()=>sp.classList.remove('hit'),130); }
+function bump(){ if(reduce) return; mirror.animate([{transform:'translateX(0)'},{transform:'translateX(3px)'},{transform:'translateX(-2px)'},{transform:'translateX(0)'}],{duration:140}); }
+
+/* ---------- input handling ---------- */
+const hist=[]; let hi=0;
+inp.addEventListener('keydown',e=>{
+  audio();
+  if(mode&&mode.key){ if(mode.key(e)) e.preventDefault(); tick('key'); return; }
+  const k=e.key;
+  if(e.ctrlKey||e.metaKey){ if(k==='l'){ e.preventDefault(); log.innerHTML=''; render(); } return; }
+  if(k==='Enter'){ e.preventDefault(); tick('enter'); flash(); spark(); bump();
+    const v=inp.value; inp.value=''; if(v.trim()&&hist[hist.length-1]!==v) hist.push(v); hi=hist.length; exec(v); render(); return; }
+  if(k==='Tab'){ e.preventDefault(); const v=inp.value;
+    if(v[0]==='/'&&!v.includes(' ')){ const m=Object.keys(C).filter(c=>c.startsWith(v.toLowerCase()));
+      if(m.length===1){ inp.value=m[0]+' '; tick('key'); render(); } else if(m.length>1){ p(m.join('   '),'dim'); } }
+    return; }
+  if(k==='ArrowUp'||k==='ArrowDown'){ e.preventDefault(); tick('key');
+    hi=Math.max(0,Math.min(hist.length,hi+(k==='ArrowUp'?-1:1))); inp.value=hist[hi]||''; render(); inp.setSelectionRange(inp.value.length,inp.value.length); return; }
+  if(k==='Backspace'||k==='Delete'){ tick('back'); flash(); return; }
+  if(k===' '){ tick('space'); flash(); return; }
+  if(k.length===1){ tick('key'); flash(); }
+});
+inp.addEventListener('input',e=>{
+  if(mode&&mode.key){ inp.value=''; return; }
+  const ins=e.inputType&&e.inputType.startsWith('insert');
+  render(ins?inp.selectionStart-1:-1); if(ins) spark();
+});
+document.addEventListener('selectionchange',()=>{ if(document.activeElement===inp) render(); });
+inp.addEventListener('focus',()=>{ render(); });
+inp.addEventListener('blur',()=>{ const c=$('cr'); if(c) c.classList.add('solid'); });
+term.addEventListener('mousedown',e=>{ if(e.target.closest('a')) return; e.preventDefault(); inp.focus(); });
+document.addEventListener('keydown',e=>{ if(e.target.closest&&e.target.closest('.win')) return; if(document.activeElement!==inp&&!e.ctrlKey&&!e.metaKey&&!e.altKey) inp.focus(); });
+
+render(); inp.focus();
+if(cfg.proxyOn) initProxy().catch(()=>{});
+})();
+</script>
+</body>
+</html>
