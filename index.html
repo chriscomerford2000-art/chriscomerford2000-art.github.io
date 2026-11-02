@@ -196,11 +196,20 @@ function initProxy(){
     await loadScript(b+'baremux/index.js');
     await loadScript(b+'uv/uv.bundle.js');
     await loadScript(b+'uv/uv.config.js');
+    const within=(pr,ms,what)=>Promise.race([pr,new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timed out: '+what)),ms))]);
+    if(typeof BareMux==='undefined') throw new Error('baremux/index.js loaded but BareMux is not defined');
     const conn=new BareMux.BareMuxConnection(b+'baremux/worker.js');
     const mod=cfg.transport==='openssl' ? b+'libcurl/index.mjs' : b+'epoxy/index.mjs';
-    await conn.setTransport(mod,[{wisp:wispUrl()}]);
-    await navigator.serviceWorker.register(b+'sw.js',{scope:__uv$config.prefix});
-    await navigator.serviceWorker.ready;
+    await within(conn.setTransport(mod,[{wisp:wispUrl()}]),15000,'setting the transport ('+cfg.transport+', wisp '+wispUrl()+')');
+    const reg=await within(navigator.serviceWorker.register(b+'sw.js',{scope:__uv$config.prefix}),15000,'registering the service worker');
+    // Do NOT wait on navigator.serviceWorker.ready: it only resolves for a worker whose scope covers this page,
+    // and ours is scoped to the proxy prefix. Wait for the registered worker itself to activate instead.
+    await within(new Promise((res,rej)=>{
+      const sw=reg.installing||reg.waiting||reg.active;
+      if(!sw) return rej(new Error('no service worker after registering'));
+      if(sw.state==='activated') return res();
+      sw.addEventListener('statechange',()=>{ if(sw.state==='activated') res(); else if(sw.state==='redundant') rej(new Error('service worker install failed (check sw.js loads without errors)')); });
+    }),15000,'activating the service worker');
     window.__proxyIdentity=cfg.identity; // exposed for a server/worker that supports a disguised fingerprint
     PX.ready=true;
   })().catch(e=>{ PX.loading=null; throw e; });
