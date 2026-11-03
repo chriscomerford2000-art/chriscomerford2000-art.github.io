@@ -1,4 +1,4 @@
-(function(g,f){if(typeof exports=="object"&&typeof module<"u"){module.exports=f(require)}else if("function"==typeof define && define.amd){define("EpoxyTransport",["fs","path"],function(_d_0,_d_1){var d={"fs": _d_0,"path": _d_1},r=function(m){if(m in d) return d[m];if(typeof require=="function") return require(m);throw new Error("Cannot find module '"+m+"'")};return f(r)})}else {var gN={"fs":"fs","path":"path"},gReq=function(r){var mod = r in gN ? g[gN[r]] : g[r]; return mod };g["EpoxyTransport"]=f(gReq)}}(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : this,function(require){var exports={};var __exports=exports;var module={exports};
+(function(g,f){if(typeof exports=="object"&&typeof module<"u"){module.exports=f(require)}else if("function"==typeof define && define.amd){define("EpxMod",["fs","ws","path"],function(_d_0,_d_1,_d_2){var d={"fs": _d_0,"ws": _d_1,"path": _d_2},r=function(m){if(m in d) return d[m];if(typeof require=="function") return require(m);throw new Error("Cannot find module '"+m+"'")};return f(r)})}else {var gN={"fs":"fs","ws":"ws","path":"path"},gReq=function(r){var mod = r in gN ? g[gN[r]] : g[r]; return mod };g["EpxMod"]=f(gReq)}}(typeof globalThis < "u" ? globalThis : typeof self < "u" ? self : this,function(require){var exports={};var __exports=exports;var module={exports};
 "use strict";
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -1522,36 +1522,13 @@ var EpoxyTransport = class {
   async meta() {
   }
   async request(remote, method, body, headers, signal) {
-    if (body instanceof Blob) body = await body.arrayBuffer();
+    if (body instanceof Blob)
+      body = await body.arrayBuffer();
     try {
-      let headersObj = {};
-      for (let [key, value] of headers) {
-        if (headersObj[key]) {
-          console.warn(
-            `Duplicate header key "${key}" detected. Overwriting previous value.`
-          );
-        }
-        headersObj[key] = value;
-      }
-      let res = await this.client.fetch(remote.href, {
-        method,
-        body,
-        headers: headersObj,
-        redirect: "manual"
-      });
-      let headersEntries = [];
-      for (let [key, value] of Object.entries(res.rawHeaders)) {
-        if (Array.isArray(value)) {
-          for (let v of value) {
-            headersEntries.push([key, v]);
-          }
-        } else {
-          headersEntries.push([key, value]);
-        }
-      }
+      let res = await this.client.fetch(remote.href, { method, body, headers, redirect: "manual" });
       return {
         body: res.body,
-        headers: headersEntries,
+        headers: res.rawHeaders,
         status: res.status,
         statusText: res.statusText
       };
@@ -1562,30 +1539,16 @@ var EpoxyTransport = class {
   }
   connect(url, protocols, requestHeaders, onopen, onmessage, onclose, onerror) {
     let handlers = new EpoxyHandlers(
-      // epoxy does not support getting the server selected protocol/extension
-      () => onopen("", ""),
-      // epoxy does not support getting close code/reason
-      () => onclose(1e3, "Closed by remote"),
+      onopen,
+      onclose,
       onerror,
-      (data) => (
-        //@ts-ignore
-        data instanceof Uint8Array ? onmessage(data.buffer) : onmessage(data)
-      )
+      (data) => data instanceof Uint8Array ? onmessage(data.buffer) : onmessage(data)
     );
-    let headersObj = {};
-    for (let [key, value] of requestHeaders) {
-      if (headersObj[key]) {
-        console.warn(
-          `Duplicate header key "${key}" detected. Overwriting previous value.`
-        );
-      }
-      headersObj[key] = value;
-    }
     let ws = this.client.connect_websocket(
       handlers,
       url.href,
       protocols,
-      headersObj
+      Object.assign(requestHeaders)
     );
     return [
       async (data) => {
