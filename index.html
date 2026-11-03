@@ -40,33 +40,54 @@ body{background:var(--bg);color:var(--fg);font:16px/1.45 'Roboto Mono',ui-monosp
 #cmds div{color:var(--dim);cursor:pointer;padding:1px 4px;margin:0 -4px;border-radius:4px;transition:color .15s,background .15s}
 #cmds div:hover{color:var(--accent);background:#ffffff0d}
 canvas.cv{display:block;margin:6px 0;border:2px solid var(--border);border-radius:6px;background:#0d0d14}
-.win{position:fixed;z-index:50;background:var(--panel);border:2px solid var(--border);border-radius:12px;box-shadow:0 14px 44px #000b;overflow:hidden;font-size:14px;max-width:96vw;animation:in .2s}
-.wh{display:flex;justify-content:space-between;align-items:center;padding:6px 8px 6px 12px;border-bottom:2px solid #ffffff14;cursor:move;user-select:none;touch-action:none}
-.wt{color:#b5b5bd}
+.win{position:fixed;z-index:50;background:var(--panel);border:2px solid var(--border);border-radius:12px;box-shadow:0 14px 44px #000b;overflow:hidden;font-size:14px;display:flex;flex-direction:column;min-width:300px;min-height:200px;animation:in .2s}
+.win.front{border-color:var(--accent)}
+.win.hid{visibility:hidden;pointer-events:none}
+.wh{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 12px;border-bottom:2px solid #ffffff14;cursor:move;user-select:none;touch-action:none;flex:none}
+.wt{color:#b5b5bd;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wb{flex:none}
 .wb button{background:none;border:0;color:var(--dim);font:inherit;width:28px;height:26px;border-radius:6px;cursor:pointer}
 .wb button:hover{background:#ffffff14;color:var(--accent)}
 .wb .wx:hover{color:var(--err)}
-.wbody{padding:10px 12px 12px}
-.win.min{width:230px!important}
-.win.min .wbody{height:0!important;padding:0;overflow:hidden}
-.win.min .wh{border-bottom:0}
+.wbody{flex:1;min-height:0;display:flex;flex-direction:column}
+.rz{position:absolute;z-index:6;touch-action:none}
+.rz.n{top:0;left:14px;right:14px;height:6px;cursor:ns-resize}
+.rz.s{bottom:0;left:14px;right:14px;height:6px;cursor:ns-resize}
+.rz.e{right:0;top:14px;bottom:14px;width:6px;cursor:ew-resize}
+.rz.w{left:0;top:14px;bottom:14px;width:6px;cursor:ew-resize}
+.rz.ne{top:0;right:0;width:14px;height:14px;cursor:nesw-resize}
+.rz.nw{top:0;left:0;width:14px;height:14px;cursor:nwse-resize}
+.rz.se{bottom:0;right:0;width:14px;height:14px;cursor:nwse-resize}
+.rz.sw{bottom:0;left:0;width:14px;height:14px;cursor:nesw-resize}
 .win input{flex:1;min-width:0;background:#0d0d14;color:var(--fg);border:2px solid var(--border);border-radius:6px;padding:6px 8px;font:inherit;outline:none}
 .win input:focus{border-color:var(--accent)}
 .win .b{background:#ffffff0d;color:var(--fg);border:2px solid var(--border);border-radius:6px;padding:5px 10px;font:inherit;cursor:pointer;transition:border-color .15s,color .15s}
 .win .b:hover{border-color:var(--accent);color:var(--accent)}
-.win.view .wbody{padding:0;height:min(76vh,700px);display:flex;flex-direction:column}
-.vbar{display:flex;gap:6px;padding:8px 10px;border-bottom:2px solid #ffffff14}
+.vbar{display:flex;gap:6px;padding:8px 10px;border-bottom:2px solid #ffffff14;flex:none}
 .vstage{position:relative;flex:1;background:#0d0d14;min-height:0}
 .vstage iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#fff}
 .vload{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--dim);background:var(--panel);pointer-events:none;transition:opacity .25s;text-align:center;padding:12px}
 .vload.off{opacity:0}
-.vnote{padding:5px 10px;font-size:12px;border-top:2px solid #ffffff14;color:var(--dim)}
+.vnote{padding:5px 10px;font-size:12px;border-top:2px solid #ffffff14;color:var(--dim);flex:none}
+#dock{flex:0 0 auto;align-self:flex-start;padding:9px;display:flex;flex-direction:column;position:relative;z-index:100000;background:var(--bg)}
+#dock[hidden]{display:none}
+#slots{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 90px);overflow-y:auto;overflow-x:hidden;scrollbar-width:none;min-height:0}
+#slots::-webkit-scrollbar{display:none}
+.slot{width:34px;height:34px;flex:none;box-sizing:border-box;border:2px solid var(--border);border-radius:9px;background:var(--panel);display:flex;align-items:center;justify-content:center;padding:0;margin:0;font:inherit;color:var(--accent);overflow:hidden;position:relative}
+.slot.on{cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.slot.on:hover{border-color:var(--accent)}
+.slot.front{border-color:var(--accent)}
+.slot.hid img,.slot.hid .ltr{opacity:.45}
+.slot img{width:20px;height:20px;object-fit:contain;border-radius:4px}
+.slot .ltr{font-size:16px;line-height:1}
+@media(max-width:760px){#dock{align-self:auto;padding:7px 8px}#slots{flex-direction:row;overflow-x:auto;overflow-y:hidden}}
 @media(max-width:760px){.wrap{flex-direction:column}#cp{flex:none;width:100%}#sp{width:100%}.box{height:50vh}body{padding-top:5vh}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
+  <aside class="panel" id="dock" aria-label="Open windows"><div id="slots"></div></aside>
   <section class="panel" id="sp">
     <h2>Search</h2>
     <div class="box" id="term" tabindex="-1">
@@ -279,68 +300,178 @@ function snakeGame(){
   }};
 }
 
-/* ---------- floating windows ---------- */
-function makeWindow(title,{minimise=true,center=false,width=380}={}){
-  const w=document.createElement('div'); w.className='win'; w.style.width=width+'px';
-  w.innerHTML='<div class="wh"><span class="wt">'+esc(title)+'</span><span class="wb">'+
-    (minimise?'<button class="wmin" title="Minimise" aria-label="Minimise">&#8211;</button>':'')+
-    '<button class="wx" title="Close" aria-label="Close">&#10005;</button></span></div><div class="wbody"></div>';
+/* ---------- floating windows + dock ---------- */
+const wins=[]; let zTop=50;
+const slotsEl=$('slots');
+const frontOf=()=>wins.filter(x=>!x.hidden).sort((a,b)=>(+a.el.style.zIndex)-(+b.el.style.zIndex)).pop()||null;
+
+function renderDock(){
+  const top=frontOf(); slotsEl.textContent=''; $('dock').hidden=!wins.length;
+  wins.forEach(w=>w.el.classList.toggle('front',w===top));
+  const n=wins.length;
+  for(let i=0;i<n;i++){
+    const w=wins[i];
+    const b=document.createElement('button'); b.type='button';
+    b.className='slot on'+(w.hidden?' hid':'')+(w===top?' front':'');
+    b.title=(w.title||w.host||'Window')+'\nClick: show or hide. Right-click: close.';
+    if(w.icon){
+      const im=new Image(); im.alt=''; im.draggable=false;
+      im.onerror=()=>{ w.icon=null; renderDock(); };
+      im.src=w.icon; b.appendChild(im);
+    } else {
+      const s=document.createElement('span'); s.className='ltr'; s.textContent=((w.host||'?')[0]||'?').toUpperCase(); b.appendChild(s);
+    }
+    b.onclick=()=>{ if(w.hidden||frontOf()!==w) focusWin(w); else setHidden(w,true); };
+    b.oncontextmenu=e=>{ e.preventDefault(); w.close(); };
+    b.onauxclick=e=>{ if(e.button===1){ e.preventDefault(); w.close(); } };
+    slotsEl.appendChild(b);
+  }
+}
+function setHidden(w,h){ w.hidden=h; w.el.classList.toggle('hid',h); renderDock(); }
+function focusWin(w){ w.hidden=false; w.el.classList.remove('hid'); w.el.style.zIndex=++zTop; renderDock(); }
+
+function makeWindow({width=900,height=600}={}){
+  const vw=innerWidth, vh=innerHeight;
+  width=Math.max(300,Math.min(width,vw-20)); height=Math.max(200,Math.min(height,vh-20));
+  const off=(wins.length%6)*28, w=document.createElement('div'); w.className='win';
+  $('dock').hidden=false; const dk=$('dock').getBoundingClientRect(), minL=vw>760?Math.round(dk.left)+56+12:0;
+  w.style.cssText='width:'+width+'px;height:'+height+'px;left:'+Math.max(minL,Math.min(vw-width,(vw-width)/2+off))+'px;top:'+Math.max(0,Math.min(vh-height,(vh-height)/2+off-30))+'px;z-index:'+(++zTop);
+  w.innerHTML='<div class="wh"><span class="wt"></span><span class="wb"><button class="wmin" title="Hide (bring it back from the dock)" aria-label="Hide">&#8211;</button><button class="wx" title="Close" aria-label="Close">&#10005;</button></span></div><div class="wbody"></div>'
+    +['n','s','e','w','ne','nw','se','sw'].map(d=>'<i class="rz '+d+'" data-d="'+d+'"></i>').join('');
   document.body.appendChild(w);
-  if(center){ w.style.left='50%'; w.style.top='50%'; w.style.transform='translate(-50%,-50%)'; }
-  else { w.style.right='20px'; w.style.bottom='20px'; }
-  const head=w.querySelector('.wh'), api={el:w,body:w.querySelector('.wbody'),onclose:null,close(){ if(api.onclose) api.onclose(); w.remove(); }};
+  const head=w.querySelector('.wh');
+  const api={ el:w, body:w.querySelector('.wbody'), tt:w.querySelector('.wt'), hidden:false, title:'', host:'', icon:null, iconOrigin:'', key:null, frame:null, onclose:null,
+    close(){
+      if(api.onclose) api.onclose();
+      if(api.icon&&String(api.icon).startsWith('blob:')) URL.revokeObjectURL(api.icon);
+      const i=wins.indexOf(api); if(i>=0) wins.splice(i,1);
+      w.remove(); renderDock(); inp.focus();
+    } };
   w.querySelector('.wx').onclick=()=>api.close();
-  const m=w.querySelector('.wmin');
-  if(m) m.onclick=()=>{ const on=w.classList.toggle('min'); m.innerHTML=on?'&#9633;':'&#8211;'; m.title=on?'Restore':'Minimise';
-    if(on){ w._cs=w.getAttribute('style'); Object.assign(w.style,{left:'auto',top:'auto',right:'20px',bottom:'20px',transform:'none'}); }
-    else if(w._cs) w.setAttribute('style',w._cs); };
+  w.querySelector('.wmin').onclick=()=>setHidden(api,true);
+  w.addEventListener('pointerdown',()=>{ if(frontOf()!==api) focusWin(api); },true);
+
   head.addEventListener('pointerdown',e=>{
     if(e.target.closest('button')) return;
-    const r=w.getBoundingClientRect(); Object.assign(w.style,{left:r.left+'px',top:r.top+'px',right:'auto',bottom:'auto',transform:'none'});
-    const dx=e.clientX-r.left, dy=e.clientY-r.top; head.setPointerCapture(e.pointerId);
+    const r=w.getBoundingClientRect(), dx=e.clientX-r.left, dy=e.clientY-r.top; head.setPointerCapture(e.pointerId);
     const mv=ev=>{ w.style.left=Math.max(0,Math.min(innerWidth-80,ev.clientX-dx))+'px'; w.style.top=Math.max(0,Math.min(innerHeight-34,ev.clientY-dy))+'px'; };
-    const up=()=>{ head.removeEventListener('pointermove',mv); head.removeEventListener('pointerup',up); };
-    head.addEventListener('pointermove',mv); head.addEventListener('pointerup',up);
+    const up=()=>{ head.removeEventListener('pointermove',mv); head.removeEventListener('pointerup',up); head.removeEventListener('pointercancel',up); };
+    head.addEventListener('pointermove',mv); head.addEventListener('pointerup',up); head.addEventListener('pointercancel',up);
   });
+
+  w.querySelectorAll('.rz').forEach(h=>h.addEventListener('pointerdown',e=>{
+    e.preventDefault(); e.stopPropagation();
+    const d=h.dataset.d, r=w.getBoundingClientRect(), sx=e.clientX, sy=e.clientY, minW=320, minH=220;
+    h.setPointerCapture(e.pointerId);
+    const mv=ev=>{
+      const dx=ev.clientX-sx, dy=ev.clientY-sy; let L=r.left, T=r.top, W=r.width, H=r.height;
+      if(d.includes('e')) W=Math.max(minW,Math.min(innerWidth-L,r.width+dx));
+      if(d.includes('s')) H=Math.max(minH,Math.min(innerHeight-T,r.height+dy));
+      if(d.includes('w')){ W=Math.max(minW,r.width-dx); L=r.right-W; if(L<0){ L=0; W=r.right; } }
+      if(d.includes('n')){ H=Math.max(minH,r.height-dy); T=r.bottom-H; if(T<0){ T=0; H=r.bottom; } }
+      w.style.left=L+'px'; w.style.top=T+'px'; w.style.width=W+'px'; w.style.height=H+'px';
+    };
+    const up=()=>{ h.removeEventListener('pointermove',mv); h.removeEventListener('pointerup',up); h.removeEventListener('pointercancel',up); };
+    h.addEventListener('pointermove',mv); h.addEventListener('pointerup',up); h.addEventListener('pointercancel',up);
+  }));
+
+  wins.push(api);
   return api;
 }
 
-/* ---------- in-page URL viewer ---------- */
+/* ---------- in-page URL viewer (one window per site, as many as you like) ---------- */
 function normUrl(raw){
   raw=(raw||'').trim(); if(!raw||/\s/.test(raw)) return null;
   let u; try{ u=new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(raw)?raw:'https://'+raw); }catch{ return null; }
   return /^https?:$/.test(u.protocol)&&(u.hostname.includes('.')||u.hostname==='localhost') ? u.href : null;
 }
-let viewer=null;
-function openViewer(url){
-  const href=normUrl(url); if(!href) return false;
-  if(!viewer){
-    const w=viewer=makeWindow('Viewer',{center:true,width:1000}); w.el.classList.add('view');
-    w.body.innerHTML=`<form class="vbar"><button class="b" type="button" data-r title="Reload" aria-label="Reload">&#8635;</button>
-      <input aria-label="Address" placeholder="Enter a web address" spellcheck="false"><button class="b" type="submit">Go</button>
-      <button class="b" type="button" data-n title="Open in a new tab" aria-label="Open in a new tab">&#8599;</button></form>
-      <div class="vstage"><iframe title="Page viewer" allow="autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write" allowfullscreen
-        sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-presentation"></iframe><div class="vload">Loading...</div></div>
-      <div class="vnote">Blank page? That site may not allow embedding. Turn the proxy on with /proxy_settings on, or use the arrow button.</div>`;
-    const f=w.body.querySelector('iframe'), addr=w.body.querySelector('input'), ld=w.body.querySelector('.vload'), tt=w.el.querySelector('.wt');
-    w.cur='';
-    const load=u=>{ ld.textContent='Loading...'; ld.classList.remove('off');
-      withProxyQuiet(()=>{ f.src=proxied(u); }, e=>{ ld.textContent='Proxy failed: '+e.message; }); };
-    w.go=u=>{ w.cur=u; addr.value=u; tt.textContent='Viewer: '+new URL(u).hostname; load(u); };
-    f.addEventListener('load',()=>ld.classList.add('off'));
-    w.body.querySelector('form').onsubmit=e=>{ e.preventDefault(); const n=normUrl(addr.value);
-      if(n) w.go(n); else if(addr.value.trim()) openUrl(engines[cfg.engine]+encodeURIComponent(addr.value.trim())); };
-    w.body.querySelector('[data-r]').onclick=()=>{ if(w.cur) load(w.cur); };
-    w.body.querySelector('[data-n]').onclick=()=>{ if(w.cur) openUrl(w.cur); };
-    w.onclose=()=>{ viewer=null; inp.focus(); };
-  }
-  const v=viewer; if(v.el.classList.contains('min')) v.el.querySelector('.wmin').click();
-  v.go(href); return true;
-}
 function withProxyQuiet(fn,onErr){
   if(!cfg.proxyOn||PX.ready) return fn();
   initProxy().then(fn).catch(onErr);
 }
+/* turn a proxied address (/service/xxxx) back into the real one */
+function unproxy(u){
+  try{
+    if(!window.__uv$config) return u;
+    const pre=location.origin+__uv$config.prefix;
+    return String(u).startsWith(pre) ? __uv$config.decodeUrl(String(u).slice(pre.length)) : u;
+  }catch{ return u; }
+}
+function setMeta(v,u){
+  try{ v.host=new URL(u).hostname.replace(/^www\./,''); }catch{ v.host=''; }
+  v.tt.textContent=v.title||v.host||'Viewer';
+  renderDock();
+}
+function setIcon(v,url,origin){
+  if(v.icon===url) { v.iconOrigin=origin; return; }
+  if(v.icon&&String(v.icon).startsWith('blob:')) URL.revokeObjectURL(v.icon);
+  v.icon=url; v.iconOrigin=origin; renderDock();
+}
+/* the small site image a normal browser tab shows */
+async function findIcon(v,pageUrl){
+  const origin=new URL(pageUrl).origin, f=v.frame, sel='link[rel~="icon" i],link[rel~="apple-touch-icon" i]';
+  if(v.iconOrigin===origin&&v.icon) return v.icon;
+  const live=cfg.proxyOn&&PX.ready;
+  if(!live){
+    try{ const l=f.contentDocument.querySelector(sel); if(l&&l.getAttribute('href')) return new URL(l.getAttribute('href'),pageUrl).href; }catch{}
+    return origin+'/favicon.ico';
+  }
+  const cands=[];
+  try{ f.contentDocument.querySelectorAll(sel).forEach(l=>{ const h=l.href||l.getAttribute('href'); if(h) cands.push(h); }); }catch{}
+  cands.push(origin+'/favicon.ico');
+  const fw=f.contentWindow;
+  for(const c of cands.slice(0,4)){
+    try{
+      const abs=unproxy(new URL(c,pageUrl).href);
+      const r=await fw.fetch(abs); if(!r.ok) continue;
+      const b=await r.blob(); if(!b.size||/html|json|text/i.test(b.type)) continue;
+      return URL.createObjectURL(b);
+    }catch{}
+  }
+  return null;
+}
+async function onLoaded(v){
+  const f=v.frame; if(!f.getAttribute('src')) return;
+  let cur=v.cur;
+  try{ const u=unproxy(f.contentWindow.location.href); if(/^https?:/i.test(u)) cur=u; }catch{}
+  if(cur!==v.cur){ v.cur=cur; v.addr.value=cur; v.title=''; setMeta(v,cur); }
+  try{ const t=f.contentDocument.title; if(t&&t!==v.title){ v.title=t; setMeta(v,cur); } }catch{}
+  const gen=++v.iconGen; let origin; try{ origin=new URL(cur).origin; }catch{ return; }
+  let icon=null; try{ icon=await findIcon(v,cur); }catch{}
+  if(gen!==v.iconGen||!v.el.isConnected) return;
+  if(icon) setIcon(v,icon,origin); else { setIcon(v,null,origin); }
+}
+
+function openViewer(url,key){
+  const href=normUrl(url); if(!href) return false;
+  let v=key?wins.find(x=>x.key===key):null;
+  if(!v){
+    if(wins.length>=12){ p('Too many windows open (12). Close one first.','err'); return true; }
+    v=makeWindow({width:1000,height:Math.min(720,Math.round(innerHeight*0.78))}); v.key=key||null; v.el.classList.add('view');
+    v.body.innerHTML=`<form class="vbar"><button class="b" type="button" data-r title="Reload" aria-label="Reload">&#8635;</button>
+      <input aria-label="Address" placeholder="Enter a web address" spellcheck="false"><button class="b" type="submit">Go</button>
+      <button class="b" type="button" data-n title="Open in a new tab" aria-label="Open in a new tab">&#8599;</button></form>
+      <div class="vstage"><iframe title="Page viewer" allow="autoplay; fullscreen; encrypted-media; picture-in-picture; clipboard-write"
+        sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-presentation"></iframe><div class="vload">Loading...</div></div>
+      <div class="vnote">Blank page? That site may not allow embedding. Turn the proxy on with /proxy_settings on, or use the arrow button.</div>`;
+    const f=v.body.querySelector('iframe'), addr=v.body.querySelector('input'), ld=v.body.querySelector('.vload');
+    v.frame=f; v.addr=addr; v.cur=''; v.iconGen=0;
+    const load=u=>{ ld.textContent='Loading...'; ld.classList.remove('off');
+      withProxyQuiet(()=>{ f.src=proxied(u); }, e=>{ ld.textContent='Proxy failed: '+e.message; }); };
+    v.go=u=>{ v.cur=u; addr.value=u; v.title=''; setMeta(v,u); load(u); };
+    f.addEventListener('load',()=>{ ld.classList.add('off'); onLoaded(v); });
+    v.body.querySelector('form').onsubmit=e=>{ e.preventDefault(); const n=normUrl(addr.value);
+      if(n) v.go(n); else if(addr.value.trim()) openUrl(engines[cfg.engine]+encodeURIComponent(addr.value.trim())); };
+    v.body.querySelector('[data-r]').onclick=()=>{ if(v.cur) load(v.cur); };
+    v.body.querySelector('[data-n]').onclick=()=>{ if(v.cur) openUrl(v.cur); };
+  }
+  focusWin(v); v.go(href); return true;
+}
+/* clicking inside a page's frame raises its window */
+window.addEventListener('blur',()=>setTimeout(()=>{
+  const a=document.activeElement, w=wins.find(x=>x.frame===a); if(w&&frontOf()!==w) focusWin(w);
+},0));
+renderDock();
 
 /* ---------- commands ---------- */
 const visibleSources = () => Object.keys(cfg.sources).filter(k=>cfg.legacy || !cfg.sources[k].legacy);
@@ -362,7 +493,7 @@ const C = {
       if(!cfg.legacy&&cfg.sources[g].legacy) return p(labels[g]+' is a legacy catalog. Enable it with /games legacy on','err');
       const u=cfg.sources[g].url;
       if(!u) return p(labels[g]+' has no address yet. Set one with /games set '+g+' <url>','err');
-      p('Opening '+labels[g]+' in the viewer...','dim'); return void openViewer(u);
+      p('Opening '+labels[g]+' in a window...','dim'); return void openViewer(u,'game:'+g);
     }
     p('Sources'+(cfg.legacy?'':' (legacy hidden)')+':','dim');
     visibleSources().forEach(k=>rows([['/games '+k, cfg.sources[k].url?labels[k]:labels[k]+' (no address set)']]));
@@ -375,7 +506,7 @@ const C = {
   '/url_search':{ d:'open a web address in the viewer', run(a){
     if(!a[0]) return p('Usage: /url_search <address>, e.g. /url_search example.com','err');
     if(!openViewer(a[0])) return p('That does not look like a URL. Use /search for keywords.','err');
-    p('Opening '+normUrl(a[0])+' in the viewer...','dim');
+    p('Opening '+normUrl(a[0])+' in a new window...','dim');
   }},
   '/proxy_settings':{ d:'proxy: wisp, transport, identity', run(a){
     const s=(a[0]||'').toLowerCase(), v=(a[1]||'').toLowerCase();
@@ -417,8 +548,8 @@ const C = {
       cfg.invidious=u.replace(/\/$/,''); store.set('invidious',cfg.invidious); return p('Invidious instance: '+cfg.invidious,'ok');
     }
     const q=a.join(' ').trim(), base=cfg.invidious;
-    p((q?'Searching Invidious for "'+q+'"':'Opening Invidious')+' in the viewer. Minimise it to keep playing.','dim');
-    openViewer(q ? base+'/search?q='+encodeURIComponent(q) : base+'/');
+    p((q?'Searching Invidious for "'+q+'"':'Opening Invidious')+' in a window. Hide it (the - button or its dock icon) to keep it playing.','dim');
+    openViewer(q ? base+'/search?q='+encodeURIComponent(q) : base+'/','music');
     if(!q) p('Tip: /music <song or artist> searches directly. /music instance <url> switches instance.','dim');
   }},
   '/search_engine':{ d:'pick the default engine', run(a){
