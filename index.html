@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Search</title>
+<title>English Toolkit</title>
 <link rel="icon" id="fav" href="data:,">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Newsreader:wght@400;600&family=Roboto+Mono:wght@400;500&display=swap">
 <style>
 :root{--bg:#000;--panel:#181822;--fg:#c9c9d1;--dim:#6b6b78;--border:#8a8a8a;--accent:#9cc4ff;--ok:#8fd694;--err:#ff8a8a}
 *{box-sizing:border-box}
@@ -81,6 +81,92 @@ canvas.cv{display:block;margin:6px 0;border:2px solid var(--border);border-radiu
 .slot img{width:20px;height:20px;object-fit:contain;border-radius:4px}
 .slot .ltr{font-size:16px;line-height:1}
 @media(max-width:760px){#dock{align-self:auto;padding:7px 8px}#slots{flex-direction:row;overflow-x:auto;overflow-y:hidden}}
+#foot{position:fixed;left:0;right:0;bottom:8px;text-align:center;opacity:.55;pointer-events:none;z-index:300000}
+#foot a{pointer-events:auto;display:inline-block;color:#8a97b2}
+#foot img{display:block;max-height:24px;width:auto}
+/* ---------- English Toolkit (the front page) ---------- */
+#eng{position:fixed;inset:0;z-index:200000;overflow:auto;background:#e8edf4;color:#1b2a4a;font:17px/1.55 'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;color-scheme:light;padding:0 20px 64px}
+body.hq #eng{display:none}
+body:not(.hq) .wrap,body:not(.hq) .win{visibility:hidden!important;pointer-events:none}
+:where(#eng) :is(button,input,select,textarea){font:inherit;color:inherit}
+#eng :focus-visible{outline:3px solid #2a5bd7;outline-offset:2px}
+.e-top{max-width:1100px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:12px 24px;flex-wrap:wrap;padding:24px 0 0}
+.e-brand{font:600 28px/1 'Newsreader',Georgia,serif;letter-spacing:-.01em;padding-bottom:10px}
+.e-tabs{display:flex;gap:2px}
+.e-tabs button{background:none;border:0;border-bottom:3px solid transparent;padding:10px 14px 9px;cursor:pointer;color:#4a5878;border-radius:4px 4px 0 0}
+.e-tabs button:hover{color:#1b2a4a;background:#ffffff80}
+.e-tabs button[aria-selected="true"]{color:#1b2a4a;font-weight:700;border-bottom-color:#2a5bd7}
+.e-rule{max-width:1100px;margin:0 auto;border:0;border-top:1px solid #c5d0e0}
+.e-main{max-width:1100px;margin:22px auto 0}
+.e-view{display:none}.e-view.on{display:block}
+.e-write{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+.e-sheet,.e-side,.e-card{background:#fdfdfb;border-radius:8px;box-shadow:0 1px 0 #c5d0e0,0 14px 30px -22px #1b2a4a88}
+.e-sheet{overflow:hidden}
+#eng #e-text{display:block;width:100%;height:60vh;min-height:360px;resize:vertical;border:0;outline:0;border-radius:0;
+  padding:32px 28px 40px 84px;font:20px/32px 'Newsreader',Georgia,serif;color:#1b2a4a;caret-color:#2a5bd7;
+  background-color:#fdfdfb;
+  background-image:linear-gradient(90deg,transparent 0 62px,#e0645c 62px 64px,transparent 64px),repeating-linear-gradient(180deg,transparent 0 31px,#cddcf0 31px 32px);
+  background-attachment:scroll,local}
+#eng #e-text::placeholder{color:#8a97b2}
+#eng #e-text:focus-visible{outline:3px solid #2a5bd7;outline-offset:-3px}
+.e-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid #dde5f0;background:#f4f7fb}
+.e-btn{border:2px solid #aebbd2;background:#fff;border-radius:6px;padding:7px 14px;cursor:pointer;min-height:40px}
+.e-btn:hover{border-color:#2a5bd7;color:#2a5bd7}
+.e-btn.go{background:#2a5bd7;border-color:#2a5bd7;color:#fff;font-weight:700}
+.e-btn.go:hover{background:#1f49b3;border-color:#1f49b3;color:#fff}
+.e-btn[disabled]{opacity:.6;cursor:progress}
+.e-sel{margin-left:auto;display:flex;gap:8px;align-items:center;color:#4a5878}
+.e-sel select{border:2px solid #aebbd2;background:#fff;border-radius:6px;padding:6px 8px;min-height:40px}
+.e-note{padding:0 16px 12px;color:#5a6786;font-size:14px;background:#f4f7fb}
+.e-side{padding:18px;position:sticky;top:12px}
+.e-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px 8px;margin:0 0 16px;padding:0 0 16px;border-bottom:1px solid #dde5f0}
+.e-stats div{min-width:0}
+.e-stats dt{font-size:13px;color:#5a6786}
+.e-stats dd{margin:0;font:600 24px/1.15 'Newsreader',Georgia,serif}
+.e-side h2,.e-card h2{margin:0 0 8px;font:600 20px/1.2 'Newsreader',Georgia,serif}
+#e-status:empty{display:none}
+#e-status{margin:0 0 8px;font-size:15px;color:#4a5878}
+#e-status.err{color:#b3261e}
+#e-notes{list-style:none;margin:0;padding:0;max-height:calc(100vh - 380px);min-height:120px;overflow:auto}
+#e-notes li{border-left:4px solid #aebbd2;padding:6px 0 8px 12px;margin:0 0 12px}
+#e-notes li.k-Spelling,#e-notes li.k-Grammar,#e-notes li.k-Punctuation{border-left-color:#d0453d}
+#e-notes li.k-Style{border-left-color:#e0a800}
+.n-head{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.n-kind{font-weight:700;font-size:15px}
+.k-Spelling .n-kind,.k-Grammar .n-kind,.k-Punctuation .n-kind{color:#b3261e}
+.k-Style .n-kind{color:#8a6500}
+.n-show{background:none;border:0;color:#2a5bd7;text-decoration:underline;cursor:pointer;padding:2px 4px}
+.n-msg{margin:2px 0 4px;font-size:16px}
+.n-ctx{margin:0 0 6px;font:16px/1.4 'Newsreader',Georgia,serif;color:#4a5878;word-break:break-word}
+.n-ctx mark{background:#ffe27a;color:#1b2a4a;padding:0 2px;border-radius:2px}
+.n-fix{display:flex;flex-wrap:wrap;gap:6px}
+.n-fix button{border:2px solid #aebbd2;background:#fff;border-radius:6px;padding:3px 10px;cursor:pointer}
+.n-fix button:hover{border-color:#2a5bd7;color:#2a5bd7}
+.e-empty{color:#4a5878;margin:0}
+.e-card{padding:22px 24px;margin:0 0 18px}
+.e-form{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 6px}
+.e-form input{flex:1 1 220px;min-width:0;border:2px solid #aebbd2;background:#fff;border-radius:6px;padding:8px 12px;min-height:44px}
+.e-lede{margin:0 0 14px;color:#4a5878;max-width:62ch}
+.e-word{font:600 34px/1.1 'Newsreader',Georgia,serif;margin:0}
+.e-phon{color:#4a5878;margin:4px 0 0}
+.e-pos{font-weight:700;margin:16px 0 4px}
+.e-def{margin:0 0 8px;max-width:68ch}
+.e-ex{color:#4a5878;font:italic 17px/1.45 'Newsreader',Georgia,serif;margin:0 0 8px;max-width:68ch}
+.e-sub{margin:18px 0 6px;font-weight:700}
+.e-chips{display:flex;flex-wrap:wrap;gap:6px}
+.e-chips button{border:2px solid #cddcf0;background:#f4f7fb;border-radius:999px;padding:3px 12px;cursor:pointer}
+.e-chips button:hover{border-color:#2a5bd7;color:#2a5bd7}
+.e-guides{max-width:780px}
+.e-guides details{background:#fdfdfb;border-radius:8px;box-shadow:0 1px 0 #c5d0e0;margin:0 0 10px;padding:0 20px}
+.e-guides summary{cursor:pointer;padding:14px 0;font:600 20px/1.3 'Newsreader',Georgia,serif;list-style-position:outside}
+.e-guides details[open] summary{border-bottom:1px solid #dde5f0;margin-bottom:12px}
+.e-guides p,.e-guides li,.e-guides dd{max-width:64ch}
+.e-guides dl{margin:0 0 14px}
+.e-guides dt{font-weight:700;margin-top:10px}
+.e-guides dd{margin:0 0 4px}
+.e-guides ul,.e-guides ol{padding-left:22px;margin:0 0 14px}
+@media(max-width:860px){.e-write{grid-template-columns:minmax(0,1fr)}.e-side{position:static}#e-notes{max-height:none}#eng #e-text{padding-left:64px;background-image:linear-gradient(90deg,transparent 0 42px,#e0645c 42px 44px,transparent 44px),repeating-linear-gradient(180deg,transparent 0 31px,#cddcf0 31px 32px)}}
+@media(max-width:520px){#eng{padding:0 12px 64px}.e-stats{grid-template-columns:repeat(2,1fr)}.e-sel{margin-left:0}}
 @media(max-width:760px){.wrap{flex-direction:column}#cp{flex:none;width:100%}#sp{width:100%}.box{height:50vh}body{padding-top:5vh}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
@@ -102,6 +188,144 @@ canvas.cv{display:block;margin:6px 0;border:2px solid var(--border);border-radiu
     <div class="box small" id="cmds"></div>
   </aside>
 </div>
+
+<div id="eng">
+  <header class="e-top">
+    <div class="e-brand">English Toolkit</div>
+    <nav class="e-tabs" role="tablist" aria-label="Tools">
+      <button role="tab" data-tab="write" aria-selected="true">Write</button>
+      <button role="tab" data-tab="words" aria-selected="false" tabindex="-1">Words</button>
+      <button role="tab" data-tab="guides" aria-selected="false" tabindex="-1">Guides</button>
+    </nav>
+  </header>
+  <hr class="e-rule">
+  <main class="e-main">
+
+    <section class="e-view on" id="v-write" role="tabpanel" aria-label="Write">
+      <div class="e-write">
+        <div class="e-sheet">
+          <textarea id="e-text" spellcheck="true" autocapitalize="sentences" aria-label="Your writing" placeholder="Type or paste your writing here. Spelling and punctuation checks run as you type."></textarea>
+          <div class="e-bar">
+            <button class="e-btn go" id="e-check" type="button">Check grammar</button>
+            <button class="e-btn" id="e-define" type="button">Look up selected word</button>
+            <button class="e-btn" id="e-copy" type="button">Copy</button>
+            <button class="e-btn" id="e-clear" type="button">Clear</button>
+            <label class="e-sel">Spelling
+              <select id="e-lang"><option value="en-GB">British</option><option value="en-US">American</option></select>
+            </label>
+          </div>
+          <div class="e-note">The grammar check sends your text to LanguageTool. Your draft is saved only in this browser.</div>
+        </div>
+        <aside class="e-side" aria-label="Feedback">
+          <dl class="e-stats">
+            <div><dt>Words</dt><dd id="s-words">0</dd></div>
+            <div><dt>Sentences</dt><dd id="s-sent">0</dd></div>
+            <div><dt>Characters</dt><dd id="s-chars">0</dd></div>
+            <div><dt>Reading time</dt><dd id="s-time">0 min</dd></div>
+            <div><dt>Reading age</dt><dd id="s-age">-</dd></div>
+          </dl>
+          <h2>Feedback</h2>
+          <p id="e-status" role="status" aria-live="polite"></p>
+          <ul id="e-notes"></ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="e-view" id="v-words" role="tabpanel" aria-label="Words">
+      <div class="e-card">
+        <h2>Look up a word</h2>
+        <p class="e-lede">Get definitions, examples, and words with a similar or opposite meaning.</p>
+        <form class="e-form" id="w-form"><input id="w-input" aria-label="Word to look up" placeholder="For example: reluctant" autocomplete="off" spellcheck="false"><button class="e-btn go" type="submit">Look up</button></form>
+        <div id="w-out" aria-live="polite"></div>
+      </div>
+      <div class="e-card">
+        <h2>Find the right word</h2>
+        <p class="e-lede">Describe what you mean and get suggestions. Select one to look it up.</p>
+        <form class="e-form" id="m-form"><input id="m-input" aria-label="Describe the word you need" placeholder="For example: happy but tired" autocomplete="off"><button class="e-btn go" type="submit">Find words</button></form>
+        <div id="m-out" class="e-chips" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="e-view" id="v-guides" role="tabpanel" aria-label="Guides">
+      <div class="e-guides">
+        <details open><summary>Structure an essay</summary>
+          <ul>
+            <li><b>Introduction.</b> Answer the question straight away and say what you will argue. Two to four sentences is enough.</li>
+            <li><b>Body paragraphs.</b> One main idea each. Use Point, Evidence, Explain, Link: make your point, back it up, explain why it matters, then tie it back to the question.</li>
+            <li><b>Conclusion.</b> Sum up your argument in fresh words. Don't bring in new evidence.</li>
+          </ul>
+        </details>
+        <details><summary>Commonly confused words</summary>
+          <dl>
+            <dt>their, there, they're</dt><dd>Their means belonging to them. There is a place, or "there is". They're means "they are".</dd>
+            <dt>its, it's</dt><dd>Its means belonging to it. It's means "it is" or "it has".</dd>
+            <dt>your, you're</dt><dd>Your means belonging to you. You're means "you are".</dd>
+            <dt>affect, effect</dt><dd>Affect is usually a verb: to change something. Effect is usually a noun: the result.</dd>
+            <dt>then, than</dt><dd>Then is about time or order. Than is for comparing.</dd>
+            <dt>to, too, two</dt><dd>To is a direction or part of a verb. Too means "also" or "excessively". Two is the number.</dd>
+            <dt>who, whom</dt><dd>Who does the action ("Who wrote it?"). Whom receives it ("To whom did you write?").</dd>
+            <dt>fewer, less</dt><dd>Fewer for things you can count. Less for amounts you can't.</dd>
+            <dt>lose, loose</dt><dd>Lose means to misplace or not win. Loose means not tight.</dd>
+            <dt>accept, except</dt><dd>Accept means to receive or agree. Except means "apart from".</dd>
+            <dt>principal, principle</dt><dd>Principal means main, or the head of a school. A principle is a rule or belief.</dd>
+            <dt>whose, who's</dt><dd>Whose shows ownership. Who's means "who is" or "who has".</dd>
+          </dl>
+        </details>
+        <details><summary>Punctuation rules</summary>
+          <dl>
+            <dt>Comma</dt><dd>Use it after an opening phrase, between items in a list, around extra information, and before a joining word like "but" when it links two full sentences. Don't separate a subject from its verb.</dd>
+            <dt>Comma splice</dt><dd>Two full sentences joined by only a comma is an error. Use a full stop, a semicolon, or a joining word instead.</dd>
+            <dt>Semicolon</dt><dd>Joins two closely related full sentences. It can also separate items in a long list.</dd>
+            <dt>Colon</dt><dd>Comes after a complete sentence to introduce a list, an explanation, or a quotation.</dd>
+            <dt>Apostrophe</dt><dd>Shows that letters are missing (don't) or that something belongs to someone (the dog's bone, the dogs' bones). Never use it to make a plural: "apples", not "apple's".</dd>
+            <dt>Quotation marks</dt><dd>Put the exact words you are quoting inside them. Keep quotes short and fit them into your own sentence.</dd>
+          </dl>
+        </details>
+        <details><summary>Linking words</summary>
+          <dl>
+            <dt>Adding a point</dt><dd>also, furthermore, in addition, moreover</dd>
+            <dt>Contrasting</dt><dd>however, on the other hand, although, whereas, nevertheless</dd>
+            <dt>Giving a reason or result</dt><dd>because, since, therefore, as a result, consequently</dd>
+            <dt>Giving an example</dt><dd>for instance, such as, in particular</dd>
+            <dt>Showing order</dt><dd>firstly, next, then, finally</dd>
+            <dt>Concluding</dt><dd>in conclusion, overall, to sum up</dd>
+          </dl>
+        </details>
+        <details><summary>Writing about a quotation or text</summary>
+          <ol>
+            <li>Introduce the quotation in your own words so the reader knows where it comes from.</li>
+            <li>Keep it short. Quote only the words that prove your point.</li>
+            <li>Explain what it shows and the effect it has on the reader. Don't just repeat it.</li>
+          </ol>
+        </details>
+        <details><summary>Persuasive writing techniques</summary>
+          <ul>
+            <li><b>Direct address.</b> Speaking to the reader as "you".</li>
+            <li><b>Rhetorical question.</b> A question asked for effect, not for an answer.</li>
+            <li><b>Rule of three.</b> Three examples or ideas in a row.</li>
+            <li><b>Repetition.</b> Repeating a word or phrase to stress it.</li>
+            <li><b>Facts and statistics.</b> Evidence that makes the argument harder to dismiss.</li>
+            <li><b>Emotive language.</b> Words chosen to make the reader feel something.</li>
+            <li><b>Anecdote.</b> A short true story that makes the issue personal.</li>
+            <li><b>Counter-argument.</b> Admitting the other side, then showing why yours is stronger.</li>
+          </ul>
+        </details>
+        <details><summary>Check your work</summary>
+          <ul>
+            <li>Read it aloud. You will hear missing words and clumsy sentences.</li>
+            <li>Does every sentence have a subject and a verb, and make sense on its own?</li>
+            <li>Do names, places and the word "I" start with a capital letter?</li>
+            <li>Does each paragraph have one main idea, and does it answer the question?</li>
+            <li>Look for words you have used too often and swap some for different ones.</li>
+          </ul>
+        </details>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="foot"><a href="http://dnsexit.com"><img src="http://dnsexit.com/images/dns.gif" border=0 alt="DNSexit"></a></div>
 
 <script>
 (() => {
@@ -139,7 +363,7 @@ let cfg = {
   title: store.get('title',''), icon: store.get('icon',''), sound: store.get('sound',true),
   // proxy (same model as cherri: service worker + Wisp server + selectable transport)
   proxyOn: store.get('proxyOn',false), wisp: store.get('wisp',''), transport: store.get('transport','epoxy'),
-  identity: store.get('identity','mirror'), base: store.get('base','/'),
+  identity: store.get('identity','mirror'), base: store.get('base', location.pathname.replace(/[^\/]*$/,'') || '/'),
   // games / music
   legacy: store.get('legacy',true), sources: Object.assign({}, defaultSources, store.get('sources',{})),
   invidious: store.get('invidious','https://inv.nadeko.net')
@@ -190,8 +414,8 @@ const presets = {
   onedrive:{title:'OneDrive',icon:'☁️'}, wikipedia:{title:'Wikipedia, the free encyclopedia',icon:'📖'}
 };
 function applyCloak(){
-  document.title = cfg.title || 'Search';
-  $('fav').href = cfg.icon ? 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${cfg.icon}</text></svg>`) : 'data:,';
+  document.title = cfg.title || 'English Toolkit';
+  $('fav').href = 'data:image/svg+xml,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">${cfg.icon||'📝'}</text></svg>`);
 }
 applyTheme(cfg.theme); applyCloak();
 
@@ -533,7 +757,7 @@ const C = {
     if(s==='reset'){ cfg.title=''; cfg.icon=''; store.set('title',''); store.set('icon',''); applyCloak(); return p('Cloaking reset.','ok'); }
     if(s==='aboutblank'){ const w=window.open('about:blank','_blank'); if(!w) return p('Popup blocked.','err');
       const f=w.document.createElement('iframe'); f.src=location.href; f.style.cssText='position:fixed;inset:0;width:100%;height:100%;border:0';
-      w.document.body.style.margin='0'; w.document.body.appendChild(f); w.document.title=cfg.title||'Search'; return p('Opened in an about:blank tab.','ok'); }
+      w.document.body.style.margin='0'; w.document.body.appendChild(f); w.document.title=cfg.title||'English Toolkit'; return p('Opened in an about:blank tab.','ok'); }
     p(`Title: ${cfg.title||'(default)'}   Icon: ${cfg.icon||'(none)'}`);
     rows([['/cloaking_settings title <text>',''],['/cloaking_settings icon <emoji>',''],['/cloaking_settings preset <name>',Object.keys(presets).join(', ')],['/cloaking_settings aboutblank','open inside an about:blank tab'],['/cloaking_settings reset','']]);
   }},
@@ -562,6 +786,7 @@ const C = {
     Object.entries(C).filter(([,v])=>!v.hidden).forEach(([k,v])=>rows([[k,v.d]]));
     rows([['/sound on|off','typing sounds'],['/clear','clear the screen']]);
     p('Tab completes commands. Up/Down recalls history.','dim');
+    p('Ctrl+L+K (or Alt+L+K) switches back to the English Toolkit.','dim');
   }},
   '/clear':{ hidden:true, run(){ log.innerHTML=''; }},
   '/sound':{ hidden:true, run(a){ cfg.sound=a[0]!=='off'; store.set('sound',cfg.sound); p('Sound '+(cfg.sound?'on':'off'),'ok'); }}
@@ -616,7 +841,7 @@ inp.addEventListener('keydown',e=>{
   audio();
   if(mode&&mode.key){ if(mode.key(e)) e.preventDefault(); tick('key'); return; }
   const k=e.key;
-  if(e.ctrlKey||e.metaKey){ if(k==='l'){ e.preventDefault(); log.innerHTML=''; render(); } return; }
+  if(e.ctrlKey||e.metaKey){ return; }
   if(k==='Enter'){ e.preventDefault(); tick('enter'); flash(); spark(); bump();
     const v=inp.value; inp.value=''; if(v.trim()&&hist[hist.length-1]!==v) hist.push(v); hi=hist.length; exec(v); render(); return; }
   if(k==='Tab'){ e.preventDefault(); const v=inp.value;
@@ -638,12 +863,249 @@ document.addEventListener('selectionchange',()=>{ if(document.activeElement===in
 inp.addEventListener('focus',()=>{ render(); });
 inp.addEventListener('blur',()=>{ const c=$('cr'); if(c) c.classList.add('solid'); });
 term.addEventListener('mousedown',e=>{ if(e.target.closest('a')) return; e.preventDefault(); inp.focus(); });
-document.addEventListener('keydown',e=>{ if(e.target.closest&&e.target.closest('.win')) return; if(document.activeElement!==inp&&!e.ctrlKey&&!e.metaKey&&!e.altKey) inp.focus(); });
+document.addEventListener('keydown',e=>{ if(!document.body.classList.contains('hq')) return; if(e.target.closest&&e.target.closest('.win')) return; if(document.activeElement!==inp&&!e.ctrlKey&&!e.metaKey&&!e.altKey) inp.focus(); });
 
 render(); inp.focus();
 if(cfg.proxyOn) initProxy().catch(()=>{});
 })();
 </script>
-<div id="dns-credit" style="position:fixed;bottom:6px;right:8px;opacity:.6;font-size:11px;z-index:5"><a href="http://dnsexit.com"><img src="http://dnsexit.com/images/dns.gif" border="0" alt="DNSExit"></a></div>
+<script>
+/* ---------- English Toolkit ---------- */
+(() => {
+'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const sget=(k,d)=>{ try{ const v=localStorage.getItem('eng_'+k); return v===null?d:v; }catch{ return d; } };
+const sset=(k,v)=>{ try{ localStorage.setItem('eng_'+k,v); }catch{} };
+
+/* tabs */
+const tabs=$$('#eng .e-tabs button'), views=$$('#eng .e-view');
+function showTab(id){
+  tabs.forEach(b=>{ const on=b.dataset.tab===id; b.setAttribute('aria-selected',on); b.tabIndex=on?0:-1; });
+  views.forEach(v=>v.classList.toggle('on',v.id==='v-'+id));
+}
+tabs.forEach((b,i)=>{
+  b.addEventListener('click',()=>showTab(b.dataset.tab));
+  b.addEventListener('keydown',e=>{
+    if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft') return;
+    const n=tabs[(i+(e.key==='ArrowRight'?1:tabs.length-1))%tabs.length]; n.focus(); showTab(n.dataset.tab);
+  });
+});
+
+/* ---- write tab ---- */
+const ta=$('#e-text'), listEl=$('#e-notes'), statusEl=$('#e-status'), langEl=$('#e-lang'), checkBtn=$('#e-check');
+let lt=null, ltCleared=false, notes=[], programmatic=false, timer=0;
+ta.value=sget('draft',''); langEl.value=sget('lang','en-GB');
+
+const MISS={teh:'the',recieve:'receive',recieved:'received',definately:'definitely',definatly:'definitely',seperate:'separate',seperated:'separated',occured:'occurred',occurence:'occurrence',untill:'until',wich:'which',becuase:'because',beacuse:'because',alot:'a lot',accomodate:'accommodate',adress:'address',begining:'beginning',beleive:'believe',calender:'calendar',commited:'committed',completly:'completely',concious:'conscious',enviroment:'environment',existance:'existence',foriegn:'foreign',freind:'friend',goverment:'government',gaurd:'guard',happend:'happened',immediatly:'immediately',independant:'independent',interupt:'interrupt',knowlege:'knowledge',neccessary:'necessary',necesary:'necessary',noticable:'noticeable',occassion:'occasion',persue:'pursue',posession:'possession',prefered:'preferred',publically:'publicly',realy:'really',refered:'referred',relevent:'relevant',religous:'religious',rythm:'rhythm',sieze:'seize',succesful:'successful',suprise:'surprise',tommorow:'tomorrow',tounge:'tongue',truely:'truly',unfortunatly:'unfortunately',wierd:'weird',writting:'writing',thier:'their',dont:"don't",cant:"can't",doesnt:"doesn't",isnt:"isn't",didnt:"didn't",wasnt:"wasn't",couldnt:"couldn't",shouldnt:"shouldn't",wouldnt:"wouldn't",havent:"haven't",arent:"aren't"};
+const missRe=new RegExp('\\b('+Object.keys(MISS).join('|')+')\\b','gi');
+const matchCase=(src,fix)=>src.length>1&&src===src.toUpperCase()?fix.toUpperCase():(src[0]===src[0].toUpperCase()?fix[0].toUpperCase()+fix.slice(1):fix);
+const ABBR=/(?:\b(?:e\.g|i\.e|etc|vs|cf|mr|mrs|ms|dr|st|no|fig|pp?)\.|\.\.\.|…)$/i;
+const WORDRE=/[A-Za-z0-9À-ɏ]+(?:['’-][A-Za-z0-9À-ɏ]+)*/g;
+
+function quickChecks(t){
+  const out=[]; let m;
+  const add=(kind,msg,start,end,fixes,wide)=>out.push({kind,msg,start,end,orig:t.slice(start,end),fixes,wide:!!wide,src:'quick'});
+  missRe.lastIndex=0;
+  while((m=missRe.exec(t))) add('Spelling','Check the spelling of "'+m[0]+'".',m.index,m.index+m[0].length,[matchCase(m[0],MISS[m[0].toLowerCase()])]);
+  const rep=/\b([A-Za-z]{2,})[ \t]+\1\b/gi;
+  while((m=rep.exec(t))){ if(['had','that'].includes(m[1].toLowerCase())) continue; add('Grammar','Repeated word: "'+m[1]+'".',m.index,m.index+m[0].length,[m[1]]); }
+  const hv=/\b(could|should|would|must|might)[ \t]+of\b/gi;
+  while((m=hv.exec(t))) add('Grammar','Use "have", not "of".',m.index,m.index+m[0].length,[m[1]+' have']);
+  const ci=/(?<![\w'’.(])i(?![\w'’.)])/g;
+  while((m=ci.exec(t))) add('Grammar','Write "I" as a capital letter.',m.index,m.index+1,['I']);
+  const ss=/(^|[.!?][ \t]+)([a-z])/g;
+  while((m=ss.exec(t))){
+    const at=m.index+m[1].length, before=t.slice(0,m.index+(m[1]?1:0));
+    if(m[1]&&ABBR.test(before)) continue;
+    add('Grammar','A sentence should start with a capital letter.',at,at+1,[m[2].toUpperCase()]);
+  }
+  const ds=/(\S)( {2,})(?=\S)/g;
+  while((m=ds.exec(t))) add('Punctuation','Use one space between words.',m.index+1,m.index+m[0].length,[' ']);
+  const ms=/([a-z])([,;:])([A-Za-z])/g;
+  while((m=ms.exec(t))) add('Punctuation','Add a space after "'+m[2]+'".',m.index+1,m.index+3,[m[2]+' '+m[3]]);
+  const sr=/[^.!?\n]+[.!?]*/g;
+  while((m=sr.exec(t))){
+    const n=(m[0].match(WORDRE)||[]).length;
+    if(n>35){ const lead=m[0].length-m[0].trimStart().length; add('Style','Long sentence ('+n+' words). Could you split it in two?',m.index+lead,m.index+m[0].trimEnd().length,[],true); }
+  }
+  const over=/\b(very|really|stuff|things?|nice|good|a lot)\b/gi, seen={};
+  while((m=over.exec(t))){ const k=m[1].toLowerCase(); (seen[k]=seen[k]||[]).push(m); }
+  for(const k in seen) if(seen[k].length>=3){ const f=seen[k][0]; add('Style','You used "'+k+'" '+seen[k].length+' times. Would a stronger word do the job?',f.index,f.index+f[0].length,[],true); }
+  out.sort((a,b)=>a.start-b.start||a.end-b.end);
+  const keep=[]; let lastEnd=-1;
+  for(const n of out){ if(n.wide){ keep.push(n); continue; } if(n.start<lastEnd) continue; keep.push(n); lastEnd=n.end; }
+  return keep;
+}
+
+function syllables(w){
+  w=w.toLowerCase().replace(/[^a-z]/g,''); if(!w) return 0; if(w.length<=3) return 1;
+  w=w.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/,'').replace(/^y/,'');
+  return Math.max(1,(w.match(/[aeiouy]{1,2}/g)||[]).length);
+}
+function renderStats(t){
+  const ws=t.match(WORDRE)||[], sents=(t.match(/[^.!?\n]+[.!?]*/g)||[]).filter(s=>WORDRE.test(s)||(WORDRE.lastIndex=0,false)).length;
+  WORDRE.lastIndex=0;
+  $('#s-words').textContent=ws.length.toLocaleString();
+  $('#s-sent').textContent=sents.toLocaleString();
+  $('#s-chars').textContent=t.length.toLocaleString();
+  const mins=ws.length/200; $('#s-time').textContent=ws.length?(mins<1?'<1 min':Math.round(mins)+' min'):'0 min';
+  if(ws.length>=30&&sents){
+    const syl=ws.reduce((a,w)=>a+syllables(w),0), grade=0.39*(ws.length/sents)+11.8*(syl/ws.length)-15.59;
+    $('#s-age').textContent=Math.max(6,Math.min(20,Math.round(grade+5)))+'';
+  } else $('#s-age').textContent='-';
+}
+
+const KIND={spelling:'Spelling',typos:'Spelling',punctuation:'Punctuation',typography:'Punctuation',style:'Style',redundancy:'Style',plain_english:'Style'};
+function allNotes(t){
+  let out=lt?lt.notes.slice():[];
+  quickChecks(t).forEach(n=>{ if(n.wide||!out.some(o=>!o.wide&&n.start<o.end&&o.start<n.end)) out.push(n); });
+  return out.sort((a,b)=>a.start-b.start).slice(0,80);
+}
+function setStatus(msg,err){ statusEl.textContent=msg||''; statusEl.classList.toggle('err',!!err); }
+
+function update(){
+  const t=ta.value; renderStats(t); sset('draft',t);
+  notes=allNotes(t);
+  if(!t.trim()){ listEl.innerHTML='<li class="e-empty" style="border:0;padding:0">Type or paste your writing. Quick checks appear here as you go.</li>'; return; }
+  if(!notes.length){
+    listEl.innerHTML='<li class="e-empty" style="border:0;padding:0">'+(lt?'Nothing to fix. Nice work.':'The quick checks found nothing. Run the grammar check for a deeper look.')+'</li>'; return;
+  }
+  listEl.innerHTML=notes.map((n,i)=>{
+    const a=Math.max(0,n.start-30), b=Math.min(t.length,n.end+30);
+    const ctx=esc((a>0?'…':'')+t.slice(a,n.start))+'<mark>'+esc(t.slice(n.start,n.end))+'</mark>'+esc(t.slice(n.end,b)+(b<t.length?'…':''));
+    const fixes=n.fixes.slice(0,3).map((f,j)=>'<button type="button" data-i="'+i+'" data-j="'+j+'">'+(f===''?'Delete':'Use "'+esc(f)+'"')+'</button>').join('');
+    return '<li class="k-'+esc(n.kind)+'"><div class="n-head"><span class="n-kind">'+esc(n.kind)+'</span><button type="button" class="n-show" data-show="'+i+'">Show</button></div>'
+      +'<p class="n-msg">'+esc(n.msg)+'</p><p class="n-ctx">'+ctx+'</p>'+(fixes?'<div class="n-fix">'+fixes+'</div>':'')+'</li>';
+  }).join('');
+}
+
+function replaceRange(start,end,text){
+  programmatic=true; ta.focus(); ta.setSelectionRange(start,end);
+  let ok=false; try{ ok=text!==''&&document.execCommand('insertText',false,text); }catch{}
+  if(!ok) ta.setRangeText(text,start,end,'end');
+  programmatic=false;
+  const delta=text.length-(end-start);
+  if(lt){ lt.notes=lt.notes.filter(n=>!(n.start<end&&n.end>start)).map(n=>n.start>=end?Object.assign({},n,{start:n.start+delta,end:n.end+delta}):n); }
+  update();
+}
+listEl.addEventListener('click',e=>{
+  const show=e.target.closest('[data-show]'), fix=e.target.closest('[data-j]');
+  if(show){ const n=notes[+show.dataset.show]; if(n){ ta.focus(); ta.setSelectionRange(n.start,n.end); } return; }
+  if(fix){ const n=notes[+fix.dataset.i]; if(!n) return;
+    if(ta.value.slice(n.start,n.end)!==n.orig){ setStatus('The text has changed. Run the check again.',true); return; }
+    replaceRange(n.start,n.end,n.fixes[+fix.dataset.j]); }
+});
+ta.addEventListener('input',()=>{
+  if(programmatic) return;
+  if(lt){ lt=null; ltCleared=true; setStatus('You edited the text, so the grammar results were cleared. Run the check again when you are ready.'); }
+  clearTimeout(timer); timer=setTimeout(update,250);
+});
+langEl.addEventListener('change',()=>{ sset('lang',langEl.value); lt=null; update(); });
+
+checkBtn.addEventListener('click',async()=>{
+  const t=ta.value; if(!t.trim()){ setStatus('Write something first.',true); return; }
+  const text=t.slice(0,20000), ctl=new AbortController(), to=setTimeout(()=>ctl.abort(),15000);
+  checkBtn.disabled=true; checkBtn.textContent='Checking…'; setStatus('Checking your writing…');
+  try{
+    const r=await fetch('https://api.languagetool.org/v2/check',{method:'POST',signal:ctl.signal,headers:{'Content-Type':'application/x-www-form-urlencoded',Accept:'application/json'},body:new URLSearchParams({text,language:langEl.value})});
+    if(r.status===429) throw new Error('rate');
+    if(!r.ok) throw new Error('http '+r.status);
+    const j=await r.json();
+    const found=(j.matches||[]).map(m=>{
+      const cat=((m.rule&&m.rule.category&&m.rule.category.id)||'').toLowerCase(), type=((m.rule&&m.rule.issueType)||'').toLowerCase();
+      return { kind:KIND[cat]||KIND[type]||'Grammar', msg:m.message||m.shortMessage||'Check this.', start:m.offset, end:m.offset+m.length,
+        orig:text.slice(m.offset,m.offset+m.length), fixes:(m.replacements||[]).slice(0,3).map(x=>x.value), wide:false, src:'lt' };
+    });
+    lt={notes:found}; ltCleared=false;
+    setStatus(found.length?found.length+(found.length===1?' suggestion':' suggestions')+(t.length>20000?'. Only the first 20,000 characters were checked.':'.'):'No problems found.'+(t.length>20000?' Only the first 20,000 characters were checked.':''));
+  }catch(err){
+    setStatus(err.message==='rate'?'The grammar checker is busy. Wait a minute and try again.':'Could not reach the grammar checker. The quick checks still work.',true);
+  }finally{ clearTimeout(to); checkBtn.disabled=false; checkBtn.textContent='Check grammar'; update(); }
+});
+$('#e-copy').addEventListener('click',async()=>{
+  try{ await navigator.clipboard.writeText(ta.value); setStatus('Copied.'); }catch{ ta.focus(); ta.select(); setStatus('Press Ctrl+C to copy the selected text.'); }
+});
+$('#e-clear').addEventListener('click',()=>{
+  if(ta.value.length>40&&!confirm('Clear everything you have written?')) return;
+  ta.value=''; lt=null; setStatus(''); update(); ta.focus();
+});
+$('#e-define').addEventListener('click',()=>{
+  const sel=ta.value.slice(ta.selectionStart,ta.selectionEnd).trim().split(/\s+/)[0]||'';
+  if(!sel){ setStatus('Select a word in your writing first.',true); return; }
+  showTab('words'); $('#w-input').value=sel; lookup(sel);
+});
+
+/* ---- words tab ---- */
+const wOut=$('#w-out');
+async function getJSON(url){ const r=await fetch(url); if(!r.ok) throw new Error('http '+r.status); return r.json(); }
+const chips=ws=>ws.length?'<div class="e-chips">'+ws.map(w=>'<button type="button" data-w="'+esc(w)+'">'+esc(w)+'</button>').join('')+'</div>':'';
+async function lookup(word){
+  word=word.trim(); if(!word) return;
+  wOut.innerHTML='<p class="e-lede">Looking up "'+esc(word)+'"…</p>';
+  const q=encodeURIComponent(word);
+  const [dict,syn,ant]=await Promise.allSettled([
+    getJSON('https://api.dictionaryapi.dev/api/v2/entries/en/'+q),
+    getJSON('https://api.datamuse.com/words?rel_syn='+q+'&max=16'),
+    getJSON('https://api.datamuse.com/words?rel_ant='+q+'&max=12')
+  ]);
+  let h='';
+  if(dict.status==='fulfilled'&&Array.isArray(dict.value)&&dict.value.length){
+    const e=dict.value[0], ph=(e.phonetics||[]).find(p=>p.audio)||{}, text=e.phonetic||(e.phonetics||[]).map(p=>p.text).find(Boolean)||'';
+    h+='<h3 class="e-word">'+esc(e.word||word)+'</h3>'+(text||ph.audio?'<p class="e-phon">'+esc(text)+(ph.audio?' <button type="button" class="n-show" data-audio="'+esc(ph.audio)+'">Hear it</button>':'')+'</p>':'');
+    dict.value.forEach(en=>(en.meanings||[]).forEach(m=>{
+      h+='<p class="e-pos">'+esc(m.partOfSpeech||'')+'</p>';
+      (m.definitions||[]).slice(0,3).forEach(d=>{ h+='<p class="e-def">'+esc(d.definition)+'</p>'+(d.example?'<p class="e-ex">"'+esc(d.example)+'"</p>':''); });
+    }));
+  } else {
+    h+='<p class="e-def">No definition found for "'+esc(word)+'". Check the spelling'+(dict.status==='rejected'&&!/http 404/.test(dict.reason&&dict.reason.message)?', or check your connection':'')+'.</p>';
+  }
+  const sy=syn.status==='fulfilled'?syn.value.map(x=>x.word):[], an=ant.status==='fulfilled'?ant.value.map(x=>x.word):[];
+  if(sy.length) h+='<p class="e-sub">Similar meaning</p>'+chips(sy);
+  if(an.length) h+='<p class="e-sub">Opposite meaning</p>'+chips(an);
+  wOut.innerHTML=h;
+}
+$('#w-form').addEventListener('submit',e=>{ e.preventDefault(); lookup($('#w-input').value); });
+$('#v-words').addEventListener('click',e=>{
+  const c=e.target.closest('[data-w]'), a=e.target.closest('[data-audio]');
+  if(c){ $('#w-input').value=c.dataset.w; lookup(c.dataset.w); window.scrollTo&&($('#eng').scrollTop=0); }
+  if(a){ try{ new Audio(a.dataset.audio).play(); }catch{} }
+});
+$('#m-form').addEventListener('submit',async e=>{
+  e.preventDefault(); const q=$('#m-input').value.trim(), out=$('#m-out'); if(!q) return;
+  out.innerHTML='<span class="e-lede">Searching…</span>';
+  try{ const r=await getJSON('https://api.datamuse.com/words?ml='+encodeURIComponent(q)+'&max=24');
+    out.innerHTML=r.length?r.map(x=>'<button type="button" data-w="'+esc(x.word)+'">'+esc(x.word)+'</button>').join(''):'<span class="e-lede">No suggestions. Try describing it differently.</span>';
+  }catch{ out.innerHTML='<span class="e-lede">Could not reach the word finder. Check your connection and try again.</span>'; }
+});
+
+update();
+})();
+
+/* ---------- switch views: hold Ctrl (or Alt) with L and K ---------- */
+(() => {
+'use strict';
+const down=new Set(); let fired=false;
+function toggle(){
+  const on=document.body.classList.toggle('hq');
+  if(on){ const i=document.getElementById('inp'); if(i) i.focus(); }
+  else if(document.activeElement&&document.activeElement.blur) document.activeElement.blur();
+}
+addEventListener('keydown',e=>{
+  down.add(e.code);
+  if(!(e.ctrlKey||e.altKey)||(e.code!=='KeyL'&&e.code!=='KeyK')) return;
+  if(e.code==='KeyL') e.preventDefault();            // stop Ctrl+L going to the address bar
+  if(down.has('KeyL')&&down.has('KeyK')){
+    e.preventDefault(); e.stopPropagation();
+    if(!fired){ fired=true; toggle(); }
+  }
+},true);
+addEventListener('keyup',e=>{
+  down.delete(e.code);
+  if(e.code==='KeyL'||e.code==='KeyK'||/^(Control|Alt)/.test(e.code)) fired=false;
+},true);
+addEventListener('blur',()=>{ down.clear(); fired=false; });
+})();
+</script>
 </body>
 </html>
